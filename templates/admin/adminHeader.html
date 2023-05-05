@@ -1,0 +1,287 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <title>Majestic Admin</title>
+    
+  <!-- theme meta -->
+  <meta name="theme-name" content="mono" />
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <!-- GOOGLE FONTS -->
+  <link href="{% static 'admin/https://fonts.googleapis.com/css?family=Karla:400,700|Roboto' %}" rel="stylesheet">
+  <link href="{% static 'admin/plugins/material/css/materialdesignicons.min.css' %}" rel="stylesheet" />
+  <link href="{% static 'admin/plugins/simplebar/simplebar.css' %}" rel="stylesheet" />
+
+  <!-- PLUGINS CSS STYLE -->
+  <link href="{% static 'admin/plugins/nprogress/nprogress.css' %}" rel="stylesheet" />
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-GLhlTQ8iRABdZLl6O3oVMWSktQOp6b7In1Zl3/Jr59b6EGGoI1aFkw7cmDA6j6gD" crossorigin="anonymous">
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  
+  <link href="{% static 'admin/plugins/DataTables/DataTables-1.10.18/css/jquery.dataTables.min.css' %}" rel="stylesheet" />
+
+  
+  
+  <link href="{% static 'admin/plugins/jvectormap/jquery-jvectormap-2.0.3.css' %}" rel="stylesheet" />
+  
+  
+  
+  <link href="{% static 'admin/plugins/daterangepicker/daterangepicker.css' %}" rel="stylesheet" />
+  
+  
+  
+  <link href="{% static 'admin/https://cdn.quilljs.com/1.3.6/quill.snow.css' %}" rel="stylesheet">
+  
+  
+  
+  <link href="{% static 'admin/plugins/toaster/toastr.min.css' %}" rel="stylesheet" />
+  
+  
+  <!-- MONO CSS -->
+  <link id="main-css-href" rel="stylesheet" href="{% static 'admin/css/style.css' %}" />
+
+  <script src='https://kit.fontawesome.com/a076d05399.js' crossorigin='anonymous'></script>
+
+
+
+  <!-- FAVICON -->
+  <!-- <link href="{% static 'admin/images/favicon.png' %}" rel="shortcut icon" /> -->
+  <link rel="shortcut icon" href="{% static 'img/fav.png' %}">
+
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="{% static 'admin/plugins/nprogress/nprogress.js' %}"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/limonte-sweetalert2/11.1.5/sweetalert2.min.css" integrity="sha512-wY5Z5z9+5+w5m5k/Zm/Ya3yJ3xP+oCcznMvBq3HLWkI/iKt/9XeVvNt+Iwj8F/Dw1wNJx2Jkka1dbGub8s4A4Q==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+<script src="https://cdnjs.cloudflare.com/ajax/libs/limonte-sweetalert2/11.1.5/sweetalert2.min.js" integrity="sha512-Jw0D7+eZ5b5RJY5iq+LkDQO3h3O3J0K0+5wM32blJN5Z5R5h5zpmdd1C9N2d3q78/Grn1pLbN6oLl6mORvwPhA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<link rel="stylesheet" href="https://cdn.datatables.net/1.11.4/css/jquery.dataTables.min.css">
+
+  <style>
+    .avatar {
+    vertical-align: middle;
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+  }
+  </style>
+  <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+
+</head>
+
+
+  <body class="navbar-fixed sidebar-fixed" id="body">
+    <script>
+      NProgress.configure({ showSpinner: false });
+      NProgress.start();
+    </script>
+
+    
+    <div id="toaster"></div>
+    
+  <header class="main-header" id="header">
+    <nav class="navbar navbar-expand-lg navbar-light" id="navbar">
+      <!-- Sidebar toggle button -->
+      <button id="sidebar-toggler" class="sidebar-toggle">
+        <span class="sr-only">Toggle navigation</span>
+      </button>
+
+      <span class="page-title">Majestic</span>
+
+      <div class="navbar-right ">
+
+               <!-- User Account -->
+          <li class="dropdown user-menu">
+            <button class="dropdown-toggle nav-link" data-toggle="dropdown">
+              
+              <img src="{% static 'admin/images/avatar.jpg' %}" alt="Avatar" class="avatar">
+              <!-- <span class="d-none d-lg-inline-block">John Doe</span> -->
+            </button>
+            <ul class="dropdown-menu dropdown-menu-right">
+          
+              <li class="dropdown-footer">
+                <a class="dropdown-link-item" href="{% url 'adminLogout' %}"> <i class="mdi mdi-logout"></i> Log Out </a>
+              </li>
+            </ul>
+          </li>
+        </ul>
+      </div>
+    </nav>
+</header>
+  <!-- ====================================
+    ——— WRAPPER
+    ===================================== -->
+    <div class="wrapper">
+      
+
+      <!-- ====================================
+        ——— LEFT SIDEBAR WITH OUT FOOTER
+      ===================================== -->
+      <aside class="left-sidebar sidebar-dark" id="left-sidebar">
+        <div id="sidebar" class="sidebar sidebar-with-footer">
+          <!-- Aplication Brand -->
+          <div class="app-brand">
+            <a href="{% url 'adminHome' %}">
+              <span class="brand-name">Majestic</span>
+            </a>
+          </div>
+          <!-- begin sidebar scrollbar -->
+          <div class="sidebar-left" data-simplebar style="height: 100%;">
+            <!-- sidebar menu -->
+            <ul class="nav sidebar-inner" id="sidebar-menu">             
+                <li>               
+                  <a class="sidenav-item-link" href="{% url 'userManagement' %}">
+                    <!-- <i class="mdi mdi-wechat"></i> -->
+                    <i class="mdi mdi-account-group"></i>
+                    <span class="nav-text">User Management</span>
+                  </a>
+                </li>
+
+                
+     
+                <li  class="has-sub" >
+                  <a class="sidenav-item-link" href="javascript:void(0)" data-toggle="collapse" data-target="#email"
+                    aria-expanded="false" aria-controls="email">
+                    <i class="mdi mdi-image-filter-none"></i>
+                    <span class="nav-text">category</span> <b class="caret"></b>
+                  </a>
+
+                  <ul  class="collapse"  id="email"
+                    data-parent="#sidebar-menu">
+                    <div class="sub-menu">
+                          <li >
+                            <a class="sidenav-item-link" href="{% url 'addCategory' %}">
+                              <span class="nav-text">Add Category</span>
+                            </a>
+                          </li>
+                          <li >
+                            <a class="sidenav-item-link" href="{% url 'categoryManagement' %}">
+                              <span class="nav-text">Category Management</span>
+                            </a>
+                          </li> 
+                          <li >
+                            <a class="sidenav-item-link" href="{% url 'add_category_offers' %}">
+                              <span class="nav-text">Add Category Offers</span>
+                            </a>
+                          </li> 
+                          <li >
+                            <a class="sidenav-item-link" href="{% url 'display_offers' %}">
+                              <span class="nav-text">Offer Management</span>
+                            </a>
+                          </li>                                                                                                                   
+                    </div>
+                  </ul>
+
+                </li>
+
+                <li  class="has-sub" >
+                  <a class="sidenav-item-link" href="javascript:void(0)" data-toggle="collapse" data-target="#authentication"
+                    aria-expanded="false" aria-controls="authentication">
+                    <i class="mdi mdi-image-filter-none"></i>
+                    <span class="nav-text">Product</span> <b class="caret"></b>
+                  </a>
+                  <ul  class="collapse"  id="authentication"
+                    data-parent="#sidebar-menu">
+                    <div class="sub-menu">
+                          <li >
+                            <a class="sidenav-item-link" href="{% url 'addProduct' %}">
+                              <span class="nav-text">Add Product</span>
+                            </a>
+                          </li>
+                          <li >
+                            <a class="sidenav-item-link" href="{% url 'productManagement' %}">
+                              <span class="nav-text">Product Management</span>
+                            </a>
+                          </li>
+                          <li >
+                        <a class="sidenav-item-link" href="{% url 'archived_products' %}">
+                              <span class="nav-text">Archived Products</span>
+                            </a>
+                          </li>
+                          <li >
+                            <a class="sidenav-item-link" href="{% url 'add_product_offers' %}">
+                              <span class="nav-text">Add Product Offers</span>
+                            </a>
+                          </li>
+                          <li >
+                            <a class="sidenav-item-link" href="{% url 'display_offers' %}">
+                              <span class="nav-text">Offer Management</span>
+                            </a>
+                          </li>
+                      </div>
+                  </ul> 
+                  
+                </li>  
+
+             
+                <li  class="has-sub" >
+                  <a class="sidenav-item-link" href="javascript:void(0)" data-toggle="collapse" data-target="#customization"
+                    aria-expanded="false" aria-controls="customization">
+                    <i class="mdi mdi-image-filter-none"></i>
+                    <span class="nav-text">Banner</span> <b class="caret"></b>
+                  </a>
+                  <ul  class="collapse"  id="customization"
+                    data-parent="#sidebar-menu">
+                    <div class="sub-menu">
+                          <li >
+                            <a class="sidenav-item-link" href="{% url 'add_banner' %}">
+                              <span class="nav-text">Add Banner</span>
+                              
+                            </a>
+                          </li>
+                        
+                          <li >
+                            <a class="sidenav-item-link" href="{% url 'banner_management' %}">
+                              <span class="nav-text">Banner Management</span>
+                            </a>
+                          </li>
+                    </div>
+                  </ul>
+                </li>
+
+                 
+                <li  class="has-sub" >
+                  <a class="sidenav-item-link" href="javascript:void(0)" data-toggle="collapse" data-target="#other-page"
+                    aria-expanded="false" aria-controls="other-page">
+                    <i class="mdi mdi-image-filter-none"></i>
+                    <span class="nav-text">Coupon</span> <b class="caret"></b>
+                  </a>
+                  <ul  class="collapse"  id="other-page"
+                    data-parent="#sidebar-menu">
+                    <div class="sub-menu">
+                          <li >
+                            <a class="sidenav-item-link" href="{% url 'admin_add_coupon' %}">
+                              <span class="nav-text">Add Coupon</span>
+                            </a>
+                          </li>
+                
+                          <li >
+                            <a class="sidenav-item-link" href="{% url 'display_couponlist' %}">
+                              <span class="nav-text">Coupon Management</span>
+                            </a>
+                          </li>
+                    </div>
+                  </ul>
+                </li>
+                
+                <li>               
+                  <a class="sidenav-item-link" href="{% url 'admin_orders' %}">
+                    <!-- <i class="mdi mdi-wechat"></i> -->
+                    <i class="mdi mdi-image-filter-none"></i>
+                    <span class="nav-text">Orders</span>
+                  </a>
+                </li>
+
+                <li>               
+                  <a class="sidenav-item-link" href="{% url 'sales_report' %}">
+                    <!-- <i class="mdi mdi-wechat"></i> -->
+                    <i class="mdi mdi-image-filter-none"></i>
+                    <span class="nav-text">Sales Report</span>
+                  </a>
+                </li>
+
+             </div>
+          </ul>
+        
+      </div>
+    </aside>

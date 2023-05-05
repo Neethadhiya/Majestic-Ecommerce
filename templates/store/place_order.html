@@ -1,0 +1,192 @@
+{% extends 'base/base.html' %}
+{% block content %}
+{% load static %}
+<style>
+  .first{
+      display: inline-block;
+      width: 110px;
+      padding-left: 26px;
+      text-align: center;
+  }
+  .price{
+    display: inline-block;
+      width: 115px;
+      padding-left: 38px;
+      text-align: center;
+  }
+  .total-one{
+    padding-left:388px;
+  }
+  .middle{
+      display: inline-block;
+      width: 150px;
+      padding-left: 75px;
+      text-align: center;
+  }
+  .last{
+      display: inline-block;
+      width: 150px;
+      padding-left: 75px;
+      text-align: center;
+  }
+  .total{
+    padding-left:388px;
+  }
+  .amount{
+    padding-left: 160px;
+  }
+  .coupon-amount{
+    padding-left: 100px;
+
+  }
+  .grand-amount{
+    padding-left: 142px;
+
+  }
+  .grand-amount11{
+    padding-left: 144px;
+  }
+  #place-order-btn {
+    display: block;
+    margin: 0 auto;
+    text-align: center;
+}
+.genric-btn{
+  display: block;
+    margin: 0 auto;
+    text-align: center;
+}
+ .price1{
+  display: inline-block;
+      width: 130px;
+      padding-left: 26px;
+      text-align: center;
+ } 
+</style>
+<div style="padding-top: 45px;"></div>
+    <section class="checkout_area section_gap">
+        <div class="container">
+            <div class="billing_details">
+
+              <form action="{% url 'place_order' %}" method="POST" id="order-form">
+                {% csrf_token %}
+                <strong><span id="msg" style="color: red;"></span></strong>
+                <div class="row">
+                    <div class="col-lg-8">
+                        <div class="order_box">
+                          <h2 style="text-align: center;">Your Order</h2>
+                            <ul class="list">
+                              <li>
+                                <strong><span class="first">Product</span>
+                                  <span class="price">Actual Price</span>
+                                  <span class="price1">Offer Discount</span>
+                                <span class="middle">Quantity</span> 
+                                <span class="last">Total</span></li></strong>
+                                <h2></h2>
+                              {% for cart_item in cart_items %}
+                              <li>
+                                <span class="first">{{ cart_item.variant.product.product_name }} </span>
+                                <span class="price">{{ cart_item.variant.price}} </span>
+                                <span class="price1">{{ cart_item.offer_discount}} </span>
+                                <span class="middle">x {{ cart_item.quantity }}</span>
+                                <span class="last">{{ cart_item.sub_total }}</span>
+                              </li>
+                              {% endfor %}
+                          </ul>
+                         <h2></h2>
+                         <ul class="list list_2">
+                          {% if request.session.coupon_code %}
+                          <strong><li class="total">Subtotal 
+                            <span class="amount" id="sub_total">{{ request.session.sub_total }}</span></li>
+                          </strong>
+                          <li class="total"  id="discount">Coupon Discount 
+                            <span class="coupon-amount" id="coupon-discount-dis"><strong>-</strong>&nbsp;{{ request.session.discount }}</span>
+                          </li>
+                          <strong><li class="total" id="grand-amount_total" >Grand Total 
+                            <span class="grand-amount" id="coupon-grand-amount">{{ request.session.grand_total }}</span></li>
+                          </strong>
+                          {% else %}
+                            <strong><li class="total-one" id="grand-amount11">Grand Total
+                              <span class="grand-amount" id="sub-total">{{ request.session.sub_total }}</span></li>
+                            </strong>
+                            {% endif %}
+                            <h2></h2>
+                            <h2></h2>
+                          
+
+                        </ul>
+                        </div> 
+                        <div class="order_box">
+                            <h2 style="text-align: center;">Select Payment Method</h2>
+                            <div class="payment_item">
+                                    <div style="text-align: center;">
+                                      <label>
+                                        <button type="button" id="pay-btn" class="genric-btn primary success">Razorpay</button>
+                                      </label>
+                                        <label>
+                                          <a href="{% url 'cash_on_delivery' %}" class="genric-btn primary success">Cash on delivery</a>
+                                        </label>
+                                        
+                                        <label>
+                                          <a   href="{% url 'wallet' %}"  class="genric-btn primary success" style="color: white;">Wallet</a>
+                                        </label>
+                                    </div>
+                            </div>           
+                        </div>  
+                    </div>
+
+                    <div class="col-lg-4">
+                        <div class="order_box">
+                             <h2 style="text-align: center;">Delivery Address</h2>
+                            <div class="payment_item" style="text-align: center;">
+                                <p>{{ address.firstname }}&nbsp;{{ address.lastname }}<br>
+                                    {{ address.phonenumber }}<br>
+                                    {{ address.housename }}<br>
+                                    {{ address.locality }}<br>
+                                    {{ address.city }}<br>
+                                    {{ address.state }}<br>
+                                    {{ address.pincode }}
+                                  </p>
+                            </div>
+                            <h2></h2>
+                        </div>
+                    </div>
+                </div>
+                </form>
+            </div>
+        </div>
+    </section>
+    <!--================End Checkout Area =================-->
+ <!-- Razorpay's Javascript code. -->
+ <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+ <script>
+   var options = {
+      
+     // Enter the Key ID generated from the Dashboard
+     key: "{{ razorpay_merchant_key }}",
+      
+     // Amount is in currency subunits.
+     // Default currency is INR. Hence,
+     // 50000 refers to 50000 paise
+     amount: "{{ razorpay_amount }}",
+     currency: "INR",
+      
+     // Your/store name.
+     name: "Dj Razorpay",
+      
+     // Pass the `id` obtained in the response of Step 1
+     order_id: "{{ razorpay_order_id }}",
+     callback_url: "{{ callback_url }}",
+   };
+    
+   // initialise razorpay with the options.
+   var rzp1 = new Razorpay(options);
+    
+   // add event listener to the payment button.
+   document.getElementById("pay-btn").onclick = function (e) {
+     rzp1.open();
+     e.preventDefault();
+   };
+
+ </script>
+{% endblock %}

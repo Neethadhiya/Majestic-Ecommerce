@@ -1,0 +1,62 @@
+{% load static %}
+{% include 'admin/adminHeader.html' %} 
+<div class="page-wrapper">
+  <div class=" ml-5">
+    <a href="{% url 'adminHome'  %}" class="btn btn-primary">Back</a>
+  </div>
+
+       <!-- Table Product -->
+       <div class="row">
+       
+        <div class="col-12">
+          <div >
+            
+            <div style="text-align: center;"><h2> Orders</h2></div>
+            <div class="card-body">
+              <table id="myTable" class="table table-hover table-product" style="width:100%">
+                <thead>
+                  <tr>
+                    <th>Index</th>
+                    <th>Date</th>
+                    <th>Customer Name</th>
+                    <th>Order Id</th>
+                    <th>Address</th>
+                    <th>Phone Number</th>
+                    <th>Payment Type</th>
+                    <th>Total</th>
+                    <th scope="col">Order Details</th>
+                </tr>
+                </thead>
+
+                <tbody>
+                    {% for order in orders %}
+                  <tr>
+                    <td>{{ forloop.counter }}</td>
+                    <td>{{ order.date_added }}</td>
+                    <td>{{ order.address.firstname }}</td>
+                    <td>{{ order.orderid }}</td>
+                    <td>{{ order.address.housename }},<br>
+                       {{ order.address.locality }},<br> 
+                       {{ order.address.city }},<br> 
+                       {{ order.address.state }},<br>
+                        {{ order.address.pincode }}</td>
+                    <td>{{ order.address.phonenumber }}</td>
+                    <td>{{ order.payment.payment_method }}</td>
+                    <td>{{ order.total }}</td>
+                    <td><a href="{% url 'admin_order_details' order.id %}" class="btn btn-primary">Order Details</a></td>
+                  </tr>
+                  {% endfor %}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+</div>
+<script>
+    $(document).ready(function() {
+      $('#myTable').DataTable();
+    });
+
+</script>
+{% include 'admin/adminFooter.html' %}

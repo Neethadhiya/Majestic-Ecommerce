@@ -1,0 +1,100 @@
+{% load static %}
+{% include 'admin/adminHeader.html' %} 
+<body>
+	<div class="container py-5">
+		<div class="row">
+      <div class="my-5 ml-5">
+        <a href="{% url 'display_couponlist' %}" class="btn btn-primary">Back</a>
+      </div>
+			<div class="col-md-2">
+      </div>
+			<div class="col-md-10">
+        <div style="text-align: center;"> 
+          <h1 class="mb-4">Add Coupon</h1>
+        </div>
+		    <form method="post" action="{% url 'admin_add_coupon' %}">
+			    {% csrf_token %}
+          {% if messages %}
+          <ul class="messages">
+            {% for message in messages %}
+            <li {% if message.tags %}class="{{ message.tags }}
+                text-danger"{% endif %}>{{ message }}</li>
+            {% endfor %}
+          </ul>
+          {% endif %}
+			    <div class="mb-3">
+				    <label for="discount_percentage" class="form-label">Coupon Code*</label>
+				    <input type="text" class="form-control" id="coupon-code" name="coupon-code"
+            placeholder="Coupon Code" >
+            <span style="color: red;" id="coupon-error"></span>
+			    </div>
+
+			    <div class="mb-3">
+				    <label for="offer_name" class="form-label">Discount Percentage*</label>
+				    <input type="text" class="form-control" id="discount" name="discount" placeholder="Discount">
+            <span style="color: red;" id="discount-error"></span>
+			    </div>
+			    <button type="submit" class="btn btn-primary" id="add-coupon">Add Coupon</button>
+		    </form>
+	    </div>
+	  </div>
+	</div>
+</body>
+<script>
+    const form1 = document.querySelector("#form1");  
+    const coupon = document.querySelector("#coupon-code");
+    const discount = document.querySelector("#discount");
+    const couponError = document.getElementById("coupon-error");
+    const discountError = document.getElementById("discount-error");
+
+    const couponPattern =/^[A-Za-z0-9]{4,}$/;
+    const percentagePattern  =/\b[1-9]|[1-9][0-9]?\b/;
+
+    const couponFunction = () => {
+    if (!couponPattern.test(coupon.value)) {
+        couponError.textContent = "Coupon code consists of 4 or more uppercase letters or digits";
+        return false;
+    } else {
+        couponError.textContent = "";
+        return true;
+    }
+  };
+ 
+  const discountFunction = () => {
+      if (!percentagePattern.test(discount.value)) {
+          discountError.textContent = "Percentage should be a number between 0 & 99";
+          return false;
+      } else if (discount.value=="") {
+          discountError.textContent = "Discount cannot be empty";
+          return false;
+      }else  if( discount.value<0 || discount.value>99){
+        discountError.textContent = "Discount should a positive number between 0 and 99";
+      		return false;
+    	}  else {
+          discountError.textContent = "";
+          return true;
+    }
+  };
+
+    coupon.addEventListener("input", couponFunction);
+    discount.addEventListener("input", discountFunction);
+    let isFormValid = false;
+
+    const formFunctions = [
+        couponFunction,
+        discountFunction,
+    ];
+
+    document.getElementById("add-coupon").addEventListener("click", event => {
+    if (formFunctions.every(fn => fn())) {
+        isFormValid = true;
+    }
+    if (!isFormValid) {
+        event.preventDefault();
+        swal("Form is not valid!");
+    } else {
+        form.submit();
+    }
+  });
+</script>
+{% include 'admin/adminFooter.html' %}

@@ -1,0 +1,247 @@
+{% extends 'base/base.html' %}
+{% block content %}
+{% load static %}
+	
+	<!--================Order Details Area =================-->
+	<section class="order_details section_gap">
+		<div class="container">
+			<div class="my-5 ml-5">
+				<a href="{% url 'user_profile' %}" class="genric-btn success">Back</a>
+			  </div>
+			<div class="order_details_table">
+				<h2 class="success">Add Address</h2>
+				<div class="table-responsive">
+                    <div class="card-body px-5 pb-5 mb-10 pt-0">
+                        <form method="post" id="form1" action="{% url 'add_address' %}" >
+                          {% csrf_token %}
+                          {% if messages %}
+                          <ul class="messages">
+                              {% for message in messages %}
+                              <li {% if message.tags %}class="{{ message.tags }} text-danger"{% endif %}>{{ message }}</li>
+                          {% endfor %}
+                          </ul>
+                          {% endif %}
+                          <div class="row">
+                              
+                            <div class="form-group col-md-12 mb-4 mt-4">
+                              <label>First Name *</label>
+                              <input type="text" class="form-control input-lg" id="first_name" name="first_name" value="{{ first_name }}" aria-describedby="nameHelp" placeholder="First Name *" >
+                              <span style="color: red;" id="first_name-error"></span>
+                            </div>
+                            
+
+                            <div class="form-group col-md-12 mb-4">
+                              <label>Last Name *</label>
+                              <input type="text" class="form-control input-lg" id="last_name"  name="last_name" value="{{ last_name }}" aria-describedby="nameHelp" placeholder="Last Name *" >
+                              <span style="color: red;" id="last_name-error"></span>
+                            </div>
+
+
+                            <div class="form-group col-md-12 mb-4">
+                              <label>House name / Flat *</label>
+                              <input type="text" class="form-control input-lg" id="house_name_flat"  name="house_name_flat" value="{{ house_name_flat }}" aria-describedby="nameHelp" placeholder="House name / Flat *" >
+                              <span style="color: red;" id="house_name_flat-error"></span>
+                            </div>
+
+                            <div class="form-group col-md-12 mb-4">
+                              <label>Locality *</label>
+                              <input type="text" class="form-control input-lg" id="Locality" name="Locality" placeholder="Locality" value="{{ Locality }}">
+                              <span style="color: red;" id="Locality-error"></span>
+                            </div>
+
+                            <div class="form-group col-md-12 mb-4">
+                              <label>Town / City *</label>
+                              <input type="text" class="form-control input-lg" id="town_city" name="town_city" placeholder="Town / City" value="{{ town_city }}">
+                              <span style="color: red;" id="town_city-error"></span>
+                            </div>
+          
+                            <div class="form-group col-md-12 ">
+                              <label>State / Country *</label>
+                              <input type="text" class="form-control input-lg" id="state_country" name="state_country" placeholder="State / Country" value="{{ state_country }}">
+                            <span style="color: red;" id="state_country_error"></span>
+                            </div>
+                    
+                            <div class="form-group col-md-12 ">
+                              <label>Postcode / Zip *</label>
+                              <input type="text" class="form-control input-lg" id="postcode_zip" name="postcode_zip" placeholder="Postcode / Zip" value="{{ postcode_zip }}">
+                              <span style="color: red;" id="postcode_zip_error"></span>
+                            </div>
+                            <div class="form-group col-md-12 ">
+                              <label>Phone number *</label>
+                                <input type="text" class="form-control input-lg" id="phone_number" name="phone_number" placeholder="Phone number" value="{{ phone_number }}">
+                                <span style="color: red;" id="phoneError"></span>
+                              </div>
+                            <div class="col-md-12">
+                              <button type="submit" id="add-address" class="btn  btn-lg btn-block genric-btn success radius" id="addAddress">Add Addess</button> 
+                            </div>
+                          </div>
+                        </form>
+				</div>
+			</div>
+		</div>
+	</section>
+	<!--================End Order Details Area =================-->
+  <script>
+		const firstName = document.getElementById("first_name");
+		const lastName = document.getElementById("last_name");
+		// const number = document.getElementById("number");
+		const house = document.getElementById("house_name_flat");
+		const locality = document.getElementById("Locality");
+		const town = document.getElementById("town_city");
+		const state = document.getElementById("state_country");
+		const postcode = document.getElementById("postcode_zip");
+		const phone = document.getElementById("phone_number");
+  
+		const firstNameError = document.getElementById("first_name-error");
+    	const lastNameError = document.getElementById("last_name-error");
+
+		const houseError = document.getElementById("house_name_flat-error");
+		const localityError = document.getElementById("Locality-error");
+		const townError = document.getElementById("town_city-error");
+		const stateError = document.getElementById("state_country_error");
+		const postcodeError = document.getElementById("postcode_zip_error");
+		const phoneError = document.getElementById("phoneError");
+  
+		const namePattern = /^[a-zA-Z]+(\s+[a-zA-Z]+)*$/ ; 
+    const lastNamePattern=/^[a-zA-Z\s]+(?:['-][a-zA-Z\s]+)?$/;
+		const numberPattern = /^\d{10}$/;
+		const pincodePattern = /^\d{6}$/;
+    const phoneNumberPattern = /^(\+?\d{1,3}[- ]?)?(?!0)\d{10}$/;
+    const housePattern =/^[a-zA-Z0-9\-\#\s,.]+$/;
+		const fullNameFunction = () => {
+			if (!firstName.value) {
+				firstNameError.textContent = "First name is required";
+    			return false;
+  			} else if (!namePattern.test(firstName.value)) {
+        firstNameError.textContent = "Invalid first name";
+			return false;
+		  } else {
+        firstNameError.textContent = "";
+			return true;
+		  }
+		};
+		const lastNameFunction = () => {
+		if (!lastName.value) {
+          lastNameError.textContent = "Last name is required";
+          return false;
+        } else
+		  if (!lastNamePattern.test(lastName.value)) {
+        lastNameError.textContent = "Invalid last name";
+			return false;
+		  } else {
+        lastNameError.textContent = "";
+			return true;
+		  }
+		};
+  
+		
+		const houseFunction = () => {
+			if (!house.value) {
+				houseError.textContent = "House name is required";
+   			 return false;
+ 			 } else if (!housePattern.test(house.value)) {
+			houseError.textContent = "Invalid house name";
+			return false;
+		  } else {
+			houseError.textContent = "";
+			return true;
+		  }
+		};
+  
+		const localityFunction = () => {
+			if (!locality.value) {
+    			localityError.textContent = "Locality is required";
+    			return false;
+ 			 } else if (!housePattern.test(locality.value)) {
+        localityError.textContent = "Invalid localityname";
+			return false;
+		  } else {
+        localityError.textContent = "";
+			return true;
+		  }
+		};
+		const townFunction = () => {
+			if (!town.value) {
+    			townError.textContent = "Town/City name is required";
+   			 return false;
+  			} else
+		  if (!housePattern.test(town.value)) {
+        townError.textContent = "Invalid Town/City name";
+			return false;
+		  } else {
+        townError.textContent = "";
+			return true;
+		  }
+		};
+  
+		const stateFunction = () => {
+			if (!state.value) {
+  			  stateError.textContent = "State/Country name is required";
+   			 return false;
+ 			 } else if (!housePattern.test(state.value)) {
+			stateError.textContent = "Invalid State/Country name";
+			return false;
+		  } else {
+			stateError.textContent = "";
+			return true;
+		  }
+		};
+		const pincodeFunction = () => {
+			if (!postcode.value) {
+				postcodeError.textContent = "Postcode is required";
+  		  return false;
+  		} else if (!pincodePattern.test(postcode.value)) {
+        postcodeError.textContent = "Invalid Postcode";
+			return false;
+		  } else {
+        postcodeError.textContent = "";
+			return true;
+		  }
+		};
+    const phoneNumberFunction = () => {
+		if (!phone.value) {
+ 		   phoneError.textContent = "Phone number is required";
+  		  return false;
+  		} else if (!phoneNumberPattern.test(phone.value)) {
+      phoneError.textContent = "Invalid phone number";
+      return false;
+    } else {
+      phoneError.textContent = "";
+      return true;
+    }
+  };
+ 		 firstName.addEventListener("input", fullNameFunction);
+		  lastName.addEventListener("input", lastNameFunction);
+ 		 house.addEventListener("input", houseFunction);
+ 		 locality.addEventListener("input", localityFunction);
+		town.addEventListener("input", townFunction);
+		state.addEventListener("input", stateFunction);
+		postcode.addEventListener("input", pincodeFunction);
+ 	   phone.addEventListener("input", phoneNumberFunction);
+
+		let isFormValid = false;
+		const formFunctions = [
+		  fullNameFunction,
+    	  lastNameFunction,
+		  houseFunction,
+		  localityFunction,
+		  townFunction,
+		  stateFunction,
+		  pincodeFunction,
+  		 phoneNumberFunction
+		];
+		document.getElementById("addAddress")
+		  .addEventListener("click", (event) => {
+			if (formFunctions.every((fn) => fn())) {
+			  isFormValid = true;
+			}
+			if (!isFormValid) {
+			  event.preventDefault();
+			  swa("Please fill all the details");
+			} else {
+			  form.submit();
+			}
+		  });
+	  </script>
+
+{% endblock %}

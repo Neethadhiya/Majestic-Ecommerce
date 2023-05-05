@@ -1,0 +1,153 @@
+{% extends 'base/base.html' %}
+{% block content %}
+{% load static %}
+<style>
+  .first{
+      display: inline-block;
+      width: 90px;
+      padding-left: 25px;
+      color: black;
+  }
+  .first1{
+      display: inline-block;
+      width: 55px;
+      padding-left: 23px;
+      color: black;
+  }
+  .first2{
+      display: inline-block;
+      width: 116px;
+      padding-left: 20px;
+      color: black;
+  }
+ 
+  .total{
+    padding-left:388px;
+  }
+  .amount{
+    padding-left: 134px;
+  }
+  .coupon-amount{
+    padding-left: 68px;
+
+  }
+  .grand-amount{
+    padding-left: 119px;
+
+  }
+  #place-order-btn {
+    display: block;
+    margin: 0 auto;
+    text-align: center;
+}
+.genric-btn{
+  display: block;
+    margin: 0 auto;
+    text-align: center;
+}
+.amount1{
+  padding-left: 124px;
+}
+
+</style>
+<div style="padding-top: 45px;"></div>
+    <section class="checkout_area section_gap">
+        <div class="container">
+            <div class="billing_details">
+             
+                <div class="row">
+                    <div class="col-lg-8">
+                        <div class="order_box">
+                          <h2 style="text-align: center;">Invoice</h2>
+                          <h2></h2>
+
+                            <ul class="list">
+                              <li>
+                                <b>
+                                  <span class="first1">Index</span>
+                                  <span class="first">Product</span>
+                                    <span class="first">Size</span>
+                                    <span class="first">Price</span>
+                                    <span class="first">Quantity</span> 
+                                    <span class="first2">Offer Discount</span>
+                                    <span class="first">Sub Total</span></li></b>
+                                <h2></h2>
+                              {% for order_product in order_products %}
+                              <li>
+                                <span class="first1">{{ forloop.counter }}</span>
+                                <span class="first">{{ order_product.variant.product.product_name }}</span>
+                                <span class="first">{{ order_product.variant }}</span>
+                                <span class="first">{{ order_product.variant.price }}</span>
+                                <span class="first">{{ order_product.quantity }}</span>
+                                <span class="first2">{{ order_product.offer_discount}} </span>
+                                <span class="first">{{ order_product.sub_total }}</span>
+                              </li>
+                              {% endfor %}
+                          </ul>
+                         <h2></h2>
+                          <ul class="list list_2">
+                            {% if request.session.coupon_check %}
+                            {{ coupon }}				
+                            <strong><li class="total">Subtotal <span class="amount">{{ sub_total }}</span></li>
+                            </strong>
+                             <li class="total">Coupon Discount <span class="coupon-amount"><strong>-</strong>&nbsp;&nbsp;{{ discount }} </span></li> 
+                              <h2></h2> 
+                              <strong><li class="total">Grand Total <span class="grand-amount">{{ grand_total_with_coupon }}</span></li></strong>
+                              <h2></h2>
+                              <h2></h2>
+                              {% else %}
+                              <strong><li class="total">Grand Total<span class="amount1">{{ grand_total_without_coupon }}</span></li>
+                              </strong>
+                              <h2></h2>
+                              <h2></h2>
+                              {% endif %}
+
+                          </ul>
+                        </div> 
+                        <div class="order_box">
+                            <h2>Your order has been confirmed...Thank You</h2>
+                            <ul class="list-unstyled">
+                                        
+                               <b> 
+                                <h3>Payment Mode  :&nbsp;&nbsp;{{ payment_method }}</h3>
+                                <li class="text-muted total"><i class="fas fa-circle" style="color:#84B0CA ;"></i> 
+                                    <span class="fw-bold ">ID  :</span>
+                                    <span style="padding-left: 131px;">{{ orders.orderid }}</span>
+                                </li>
+                                <li class="text-muted total"><i class="fas fa-circle" style="color:#84B0CA ;"></i> 
+                                    <span class="fw-bold ">Creation Date  :</span>
+                                    <span style="padding-left: 73px;">{{ orders.date_added }}</span>
+                                </li>
+                                <li class="text-muted total"><i class="fas fa-circle" style="color:#84B0CA ;"></i> 
+                                    <span class="me-1 fw-bold">Status  :</span>
+                                    <span style="padding-left: 117px;">{{ orders.status }}</span>
+                                </li></b>
+                             
+                              </ul>
+
+                        </div>  
+                    </div>
+
+                    <div class="col-lg-4">
+                        <div class="order_box">
+                             <h2 style="text-align: center;">Delivery Address</h2>
+                            <div class="payment_item" style="text-align: center;">
+                                <p>{{ address.firstname }}&nbsp;{{ address.lastname }}<br>
+                                    {{ address.phonenumber }}<br>
+                                    {{ address.housename }}<br>
+                                    {{ address.locality }}<br>
+                                    {{ address.city }}<br>
+                                    {{ address.state }}<br>
+                                    {{ address.pincode }}
+                                  </p>
+                            </div>
+                            <h2></h2>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!--================End Checkout Area =================-->
+
+{% endblock %}

@@ -1,0 +1,259 @@
+{% load static %}
+{% include 'admin/adminHeader.html' %}
+<body>
+<div class="container py-5">
+  <div class="row">
+    <div class="my-5 ml-5">
+      <a href="{% url 'productManagement' %}" class="btn btn-primary">Back</a>
+    </div>
+  
+    <div class="col-md-2">
+    </div>
+    <div class="col-md-10"> 
+      <div style="text-align: center;"> 
+          <h1 class="mb-4">Add Product</h1>
+      </div> 
+      <form method="post" action="{% url 'addProduct' %}"
+            enctype="multipart/form-data" onsubmit="return formValidation()" id="form1">
+        {% csrf_token %}
+          {% if messages %}
+            <ul class="messages">
+              {% for message in messages %}
+                <li {% if message.tags %}class="{{ message.tags }} text-danger"{% endif %}>{{ message }}</li>
+              {% endfor %}
+            </ul>
+          {% endif %}
+
+          <label for="exampleFormControlInput2">Select Category Name</label><br>
+          <select name="subCategory" id="subCategory"
+              style="width:160px;height:36px;color:white;background-color:
+              #9E6DE0;border-radius: 5px;border: none;text-align: center;">
+            {% for category in categories %}
+              {% if category.id == request.POST.subCategory %}
+                <option value="{{ category.id }}" selected="selected">
+                {{ category.category_name }}</option>
+              {% else %}
+                <option value="{{ category.id }}">{{ category.category_name }}</option>
+              {% endif %}
+            {% endfor %}
+          </select>
+          <div class="form-group pt-5">
+            <label for="exampleFormControlInput2">Product Name*</label>
+            <input type="text" class="form-control" id="name" name="name"
+                placeholder="Product Name">
+            <span style="color: red;" id="name-error"></span>
+          </div>
+
+          <div class="form-group">
+              <label for="exampleFormControlTextarea1">Description*</label>
+              <textarea class="form-control" id="description" name="description"
+                rows="3" placeholder="Description"></textarea>
+                <span style="color: red;" id="description-error"></span>
+          </div>
+                      
+          <div class="form-group">
+            <div>
+              <label for="multiple-select" class=" form-control-label ">Add Variant*</label>
+            </div>
+              <div class="col col-md-12">
+                  <div id="input-group-1"  style="padding-top: 15px;border-bottom: 1px solid black !important;">
+                    <label for="multiple-select" class=" form-control-label mx-4" style="width:200px">Size</label><br>
+                    <select name="variant" id="variant" class="variant-group"
+                    style="width:160px;height:39px;color:white;background-color:
+                    #9E6DE0;border-radius: 5px;border: none;text-align: center;"onchange="validateVariants(this);">
+                      <option name="variant" value="Small" selected="selected">Small</option>
+                      <option name="variant" value="Medium">Medium</option>
+                      <option name="variant" value="Large">Large</option>
+                      <option name="variant" value="XL">XL</option>
+                    </select><br>
+                      <label for="multiple-select" class=" form-control-label mt-3 mx-8" style="width:200px">Stock</label>   
+                      <input type="number" class="form-control" placeholder="Stock" name="stock" value="" >
+                      <label for="multiple-select" class=" form-control-label mt-6" style="width:200px">Price</label>                
+                      <input type="number"  class="form-control my-5" placeholder="Price" name="price" value="" >                     
+                  </div>
+                  <div style="padding-top:30px;">
+                  <button type="button" class="btn btn-primary " onclick="addInputGroup()">Add More</button>
+                </div>
+              </div>
+            </div>
+            <div class="center">
+              <div class="form-input">
+              </div>
+            </div> 
+            <div class="form-group">
+              <label for="exampleFormControlFile1">Images*</label>
+              <input type="file" class="form-control-file" id="images"
+                name="images" multiple onchange="previewImages()" >
+            </div>
+            <div class="user-area " id="preview">
+            </div>
+            <div class="form-footer mt-6">
+              <button type="submit" class="btn btn-primary" id="add-product">Add Product</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </body>
+    <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+    <script>
+         const name                =   document.getElementById("name");
+         const description         =   document.getElementById("description");
+         const nameError           =   document.getElementById("name-error");
+         const descriptionError    =   document.getElementById("description-error");
+         const namePattern         =    /^[a-zA-Z]+(\s+[a-zA-Z]+)*$/ ; 
+         const descriptionPattern  =  /^[a-zA-Z0-9(),.&\-\s]*$/;
+         const nameFunction =   () => {
+			   if (!name.value) {
+				      nameError.textContent = "Product name is required";
+    			    return false;
+  			  } else if (!namePattern.test(name.value)) {
+              nameError.textContent = "Product name should contain upper case or lower case words with spaces";
+			        return false;
+		      } else {
+              nameError.textContent = "";
+			        return true;
+		      }
+		  };
+    const descriptionFunction =   () => {
+    if (!description.value) {
+          descriptionError.textContent = "Description is required";
+    			return false;
+  			} else if (!descriptionPattern.test(description.value)) {
+          descriptionError.textContent = "Invalid description";
+			    return false;
+		    } else {
+          descriptionError.textContent = "";
+			    return true;
+		    }
+		};
+        name.addEventListener("input", nameFunction);
+        description.addEventListener("input", descriptionFunction);
+        let isFormValid = false;
+        const formFunctions = [
+        nameFunction,
+        descriptionFunction
+        ];
+
+        document.getElementById("add-product")
+		      .addEventListener("click", (event) => {
+			  if (formFunctions.every((fn) => fn())) {
+			      isFormValid = true;
+			  }
+			  if (!isFormValid) {
+			      event.preventDefault();
+			      swal("Please all the fields");
+			  } else {
+			      form.submit();
+			}
+		});
+
+      function addInputGroup() {
+          var inputGroups = document.querySelectorAll("[id^='input-group-']");
+          var lastInputGroup = inputGroups[inputGroups.length - 1];
+          var newInputGroup = lastInputGroup.cloneNode(true);
+          var inputs = newInputGroup.querySelectorAll("input");
+          inputs.forEach(function (input) {
+              input.value = "";
+          });
+          lastInputGroup.after(newInputGroup);
+      }
+      function previewImages() {
+            const preview = document.getElementById('preview');
+            const files = document.getElementById('images').files;
+            for (let i = 0; i < files.length; i++) {
+                const file = files[i];
+                const reader = new FileReader();
+
+            reader.addEventListener("load", function () {
+            const img = document.createElement("img");
+            img.src = reader.result;
+            img.classList.add("user-avatar");
+            img.style.width = "70px";
+            img.style.height = "70px";
+            img.style.marginTop="15px";
+            img.style.marginLeft="25px";
+            const removeBtn = document.createElement("button");
+            removeBtn.style.paddingLeft="20px";
+            removeBtn.style.color="#87888c";
+            removeBtn.textContent = "DELETE";
+            removeBtn.addEventListener("click", function() {
+            container.remove();
+      });
+
+            const container = document.createElement("div");
+            container.appendChild(img);
+            container.appendChild(removeBtn);
+            preview.appendChild(container);
+      }, false);
+
+     if (file) {
+          reader.readAsDataURL(file);
+    }
+  }
+}
+
+
+  function formValidation() {
+      var name = document.getElementById('name').value.trim();
+      var description = document.getElementById('description').value.trim();
+      var stock = document.getElementsByName('stock');
+      var price = document.getElementsByName('price');
+      var images = document.getElementById('images').value;
+
+      if (name === "") {
+        swal("Please enter a product name.");
+        return false;
+      }
+
+      if (description === "") {
+        swal("Please enter a product description.");
+        return false;
+      }
+  
+      for (var i = 0; i < stock.length; i++) {
+        if (stock[i].value === "" || isNaN(stock[i].value)) {
+          swal("Please enter a valid stock value.");
+          return false;
+        }
+
+        if (price[i].value === "" || isNaN(price[i].value)) {
+          swal("Please enter a valid price value.");
+          return false;
+        }
+
+        if (stock[i].value<0) {
+          swal("Please enter a valid stock value.");
+          return false;
+        } 
+        if (price[i].value <0) {
+          swal("Please enter a valid price value.");
+          return false;
+        }
+      }
+      if (images === "") {
+        swal("Please select at least one image.");
+        return false;
+      }
+      return true;
+}
+function validateVariants(select) {
+    var variants = {};
+    var valid = true;
+    $('.variant-group').each(function() {
+        var variant = $(this).val();
+        if (variant in variants) {
+            valid = false;
+            return false;
+        } else {
+            variants[variant] = true;
+      }
+  });
+  if (!valid) {
+       alert('Error: Two or more input groups have the same "variant" value.');
+      return false;
+  }
+  return true;
+}
+</script>
+{% include 'admin/adminFooter.html' %}

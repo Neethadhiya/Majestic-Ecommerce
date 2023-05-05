@@ -1,0 +1,150 @@
+{% extends 'base/base.html' %}
+{% block content %}
+{% load static %}
+<div style="height:70px;"></div>
+
+	
+	<!--================Order Details Area =================-->
+	<section class="order_details section_gap">
+		<div class="container">
+			{% if messages %}
+			<ul class="messages">
+				{% for message in messages %}
+				<li {% if message.tags %}class="{{ message.tags }}
+					text-danger"{% endif %}>{{ message }}</li>
+				{% endfor %}
+			</ul>
+			{% endif %}
+			<div class="my-5 ml-5">
+				<a href="{% url 'user_profile' %}" class="genric-btn success">Back</a>
+			  </div>
+			<section class="order_details mt-4">
+				<div class="container">
+					<div class="order_details_table">
+						<h2 class="success">Edit Account Details</h2>
+						<div class="table-responsive">
+							<div class="card-body px-5 pb-5 mb-10 pt-0">
+								<form method="post" id="form1" action="{% url 'update_user' user_details.id %}" >
+									{% csrf_token %}
+									<div class="form-group col-md-12 mb-4 mt-4">
+									  <label>First Name *</label>
+									  <input type="text" class="form-control input-lg" id="first-name" name="first-name" aria-describedby="nameHelp" placeholder="First Name *" value="{{ user_details.first_name }}">
+									  <span style="color: red;" id="first-name-error"></span>
+									</div>
+
+									<div class="form-group col-md-12 mb-4 mt-4">
+										<label>Last Name *</label>
+										<input type="text" class="form-control input-lg" id="last-name" name="last-name" aria-describedby="nameHelp" placeholder="Last Name *" value="{{ user_details.last_name }}">
+										<span style="color: red;" id="last-name-error"></span>
+									  </div>
+		
+									<div class="form-group col-md-12 mb-4">
+									  <label>Phone Number *</label>
+									  <input type="text" class="form-control input-lg" id="phone-number"  name="phone-number" aria-describedby="nameHelp" readonly placeholder="Phone Number *" value="{{ user_details.phone_number }}">
+									  <span style="color: red;" id="phone-number-error"></span>
+									</div>
+								
+                                    <div class="form-group col-md-12 mb-4">
+                                        <label>Email *</label>
+                                        <input type="email" class="form-control input-lg" id="email"  name="email" aria-describedby="nameHelp" readonly placeholder="Email *" value="{{ user_details.email }}">
+                                        <span style="color: red;" id="email-error"></span>
+                                      </div>
+
+									<div class="col-md-12">
+									  <button type="submit" id="update-user" class="btn  btn-lg btn-block genric-btn success radius" id="reset-password">Update</button> 
+									</div>
+								  </div>
+								</form>
+							</div>
+					</div>
+				</div>
+			</section>
+		</div>
+	</section>
+	<script>
+		const firstName = document.getElementById("first-name");
+		const lastName = document.getElementById("last-name");
+		const email = document.getElementById("email");
+		const phone = document.getElementById("phone-number");
+
+		const firstNameError = document.getElementById("first-name-error");
+    	const lastNameError = document.getElementById("last-name-error");
+		const emailError = document.getElementById("email-error");
+		const phoneError = document.getElementById("phone-number-error");
+
+		const firstNamePattern = /^[a-zA-Z]+(\s+[a-zA-Z]+)*$/ ; 
+    	const lastNamePattern=/^[a-zA-Z\s]+(?:['-][a-zA-Z\s]+)?$/;
+		const emailPattern=/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+    	const phoneNumberPattern = /^(\+?\d{1,3}[- ]?)?(?!0)\d{10}$/;
+
+		const firstNameFunction = () => {
+		  if (!firstNamePattern.test(firstName.value)) {
+        firstNameError.textContent = "Invalid first name";
+			return false;
+		  } else {
+        firstNameError.textContent = "";
+			return true;
+		  }
+		};
+
+		const lastNameFunction = () => {
+		  if (!lastNamePattern.test(lastName.value)) {
+        lastNameError.textContent = "Invalid last name";
+			return false;
+		  } else {
+        lastNameError.textContent = "";
+			return true;
+		  }
+		};
+  
+		const emailFunction = () => {
+		  if (!emailPattern.test(email.value)) {
+        emailError.textContent = "Invalid Email";
+			return false;
+		  } else {
+        emailError.textContent = "";
+			return true;
+		  }
+		};
+
+    const phoneNumberFunction = () => {
+    if (!phoneNumberPattern.test(phone.value)) {
+      phoneError.textContent = "Invalid phone number";
+      return false;
+    } else {
+      phoneError.textContent = "";
+      return true;
+    }
+  };
+
+    firstName.addEventListener("input", firstNameFunction);
+    lastName.addEventListener("input", lastNameFunction);
+    email.addEventListener("input", emailFunction);
+    phone.addEventListener("input", phoneNumberFunction);
+
+	let isFormValid = false;
+	const formFunctions = [
+	firstNameFunction,
+    lastNameFunction,
+	emailFunction,
+    phoneNumberFunction
+	];
+	document.getElementById("update-user")
+		  .addEventListener("click", (event) => {
+			if (formFunctions.every((fn) => fn())) {
+			  isFormValid = true;
+			}
+			if (!isFormValid) {
+			  event.preventDefault();
+			  alert("Please fill all the details");
+			} else {
+			  form.submit();
+			}
+		  });
+	  </script>
+
+
+	
+	<!--================End Order Details Area =================-->
+	
+{% endblock %}

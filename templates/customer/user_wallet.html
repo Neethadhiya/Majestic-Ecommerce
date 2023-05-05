@@ -1,0 +1,35 @@
+{% extends 'base/base.html' %}
+{% block content %}
+{% load static %}
+
+	
+	<!--================Order Details Area =================-->
+	<section class="order_details section_gap">
+		<div class="container">
+			<!-- {% if messages %}
+			<ul class="messages">
+				{% for message in messages %}
+				<li {% if message.tags %}class="{{ message.tags }}
+					text-danger"{% endif %}>{{ message }}</li>
+				{% endfor %}
+			</ul>
+			{% endif %} -->
+			<div class="my-5 ml-5">
+				<a href="{% url 'user_profile' %}" class="genric-btn success">Back</a>
+			  </div>
+			<div class="order_details_table" style="text-align: center;">
+				<h2>My Account</h2>
+				<aside class="single_sidebar_widget author_widget" >
+					<img class="author_img rounded-circle" src="{% static 'img/avatar-img.jpg' %}" width="200px" height="200px" style="display: block; margin: 0 auto;" alt="avatar-img">
+					<br>
+					<h4>{{ user_details.first_name }}</h4>
+					<h4>{{ user_details.email }}</h4>
+					<h4>{{ user_details.phone_number }}</h4>
+                    <strong><h4>Wallet Balance &nbsp;&nbsp;&nbsp;-&nbsp;&nbsp;&nbsp; {{ user_details.wallet }}</h4></strong>
+					
+					<div class="br"></div>
+				</aside>
+			</div>
+		</div>
+	</section>
+{% endblock %}

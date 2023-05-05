@@ -1,0 +1,121 @@
+{% load static %}
+{% include 'admin/adminHeader.html' %} 
+<body>
+	<div class="container py-5">
+		<div class="row">
+      <div class="my-5 ml-5">
+        <a href="{% url 'banner_management' %}" class="btn btn-primary">Back</a>
+      </div>
+			<div class="col-md-2">
+      </div>
+			<div class="col-md-10">
+        <div style="text-align: center;"> 
+          <h1 class="mb-4">Add Banner</h1>
+        </div>
+            <span style="color: red;" id="banner-form-error"></span>
+
+		    <form method="post" action="{% url 'add_banner' %}" enctype="multipart/form-data">
+			    {% csrf_token %}
+          {% if messages %}
+          <ul class="messages">
+            {% for message in messages %}
+            <li {% if message.tags %}class="{{ message.tags }}
+                text-danger"{% endif %}>{{ message }}</li>
+            {% endfor %}
+          </ul>
+          {% endif %}
+			    <div class="mb-3">
+				    <label for="discount_percentage" class="form-label">Banner Title</label>
+				    <input type="text" class="form-control" id="banner_title" name="banner_title"
+                        placeholder="Banner Title" >
+                    <span style="color: red;" id="title-error"></span>
+			    </div>
+
+                <div class="form-group">
+                    <label for="exampleFormControlFile1">Images*</label>
+                    <input type="file" class="form-control-file" id="images"
+                      name="images">
+                      <span style="color: red;" id="image-error"></span>
+                    </div>
+                    <div id="image-preview"></div>
+
+			    <button type="submit" class="btn btn-primary" id="add-banner">Add Banner</button>
+		    </form>
+	    </div>
+	  </div>
+	</div>
+</body>
+<script>
+    const form1         =    document.querySelector("#form1");  
+    const title         =    document.querySelector("#banner_title");
+    const imageInput    =    document.getElementById("images");
+    const titleError    =    document.getElementById("title-error");
+    const imageError    =    document.getElementById("image-error");
+    const bannerFormError    =    document.getElementById("banner-form-error");
+    const titlePattern  =    /^[a-zA-Z0-9\s]*$/;
+
+    const titleFunction = () => {
+    if (!titlePattern.test(title.value)) {
+        titleError.textContent = "Title consists of uppercase letters, lowercase letters or digits";
+        return false;
+    } else {
+        titleError.textContent = "";
+        return true;
+    }
+  };
+
+  const imageFunction = () => {
+    if (imageInput.files.length === 0) {
+        imageError.textContent = "Please select an image.";
+        return false;
+    } else {
+        imageError.textContent = "";
+        return true;
+    }
+};
+
+  title.addEventListener("input", titleFunction);
+  imageInput.addEventListener("input", imageFunction);
+    let isFormValid = false;
+
+    const formFunctions = [
+        titleFunction,
+        imageFunction,
+    ];
+
+    document.getElementById("add-banner").addEventListener("click", event => {
+    if (formFunctions.every(fn => fn())) {
+        isFormValid = true;
+    }
+    if (!isFormValid) {
+        event.preventDefault();
+        bannerFormError.textContent = "Please fill all the fields...";
+    } else {
+        form.submit();
+    }
+  });
+  const imagePreview = document.getElementById('image-preview');
+
+  imageInput.addEventListener('change', function() {
+    const file = this.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = function(event) {
+        const img = new Image();
+        img.src = event.target.result;
+        img.style.width = "70px";
+            img.style.height = "70px";
+            img.style.marginTop="15px";
+            img.style.marginBottom="25px";
+
+            img.style.marginLeft="25px";        
+            imagePreview.innerHTML = '';
+        imagePreview.appendChild(img);
+      };
+      reader.readAsDataURL(file);
+    } else {
+      imagePreview.innerHTML = '';
+    }
+  });
+</script>
+{% include 'admin/adminFooter.html' %}

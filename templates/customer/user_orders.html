@@ -1,0 +1,268 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="zxx" class="no-js">
+<head>
+	<!-- Mobile Specific Meta -->
+	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+	<!-- Favicon-->
+	<!-- <link rel="shortcut icon" href="{% static 'img/fav.png' %}"> -->
+	<!-- Author Meta -->
+	<meta name="author" content="CodePixar">
+	<!-- Meta Description -->
+	<meta name="description" content="">
+	<!-- Meta Keyword -->
+	<meta name="keywords" content="">
+	<!-- meta character set -->
+	<meta charset="UTF-8">
+	<!-- Site Title -->
+	<title>Majestic</title>
+	<!--
+		============================================= -->
+	<link rel="stylesheet" href="{% static 'css/linearicons.css' %}">
+	<link rel="stylesheet" href="{% static 'css/font-awesome.min.css' %}">
+	<link rel="stylesheet" href="{% static 'css/themify-icons.css' %}">
+	<link rel="stylesheet" href="{% static 'css/bootstrap.css' %}">
+	<link rel="stylesheet" href="{% static 'css/owl.carousel.css' %}">
+	<link rel="stylesheet" href="{% static 'css/nice-select.css' %}">
+	
+	<link rel="stylesheet" href="{% static 'css/main.css' %}">
+	<!-- cdn for image zoom -->
+	<script src="https://code.jquery.com/jquery-3.5.1.js"></script>
+		<!-- end cdn for image zoom -->
+	<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/sweetalert/2.1.2/sweetalert.min.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.0.18/dist/sweetalert2.min.js"></script>
+	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11.0.18/dist/sweetalert2.min.css">
+	<!-- jQuery CDN -->
+
+<!-- DataTables CDN -->
+<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/v/dt/dt-1.10.25/datatables.min.css"/>
+	<style>
+		.center{
+			text-align: center;
+		}
+	</style>
+</head>
+<body>
+<header>
+	<nav class="navbar navbar-expand-lg fixed-top navbar-light bg-light" style="height:85px;">
+		<a class="nav-link" href="{% url 'index' %}"><h1 style="font-family:'Times New Roman', Times, serif">Majestic</h1></a>						
+		<button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarTogglerDemo02" aria-controls="navbarTogglerDemo02" aria-expanded="false" aria-label="Toggle navigation">
+		  <span class="navbar-toggler-icon"></span>
+		</button>
+	  
+		<div class="collapse navbar-collapse" id="navbarTogglerDemo02">
+		  <ul class="navbar-nav mr-auto mt-2 mt-lg-0">
+				<li class="nav-item active">
+					<a class="nav-link" href="{% url 'shop_page' %}">SHOP</a>
+				</li>
+		  </ul>
+		  <ul class="navbar-nav mr-auto mt-0 mt-lg-0">
+			{% if user.is_authenticated and request.session %}
+			<li class="mt-0 my-3">
+				<h5  style="margin-top: -5px;">Hi&nbsp;{{ request.user.first_name }}</h5>
+			</li>
+			{% endif %}
+			{% if cart %}
+			{% if request.session.item_count %}				
+				<li class="nav-item active mx-3">
+					<a href="{% url 'cartview' %}">
+						<img src="{% static '/img/shopping-cart.png' %}" alt="Cart" width="25px" height="25px">
+						<span id="item_count" class="badge">{{ request.session.item_count }}</span>
+					</a>				
+				</li>
+			{% else %}
+				<li class="mx-3">
+					<a href="{% url 'cartview' %}">
+						<img src="{% static '/img/shopping-cart.png' %}" alt="Cart" width="40px" height="40px">
+					</a>
+				</li>
+
+			{% endif %}
+			{% endif %}
+			{% if euser %}
+			<li>
+				<div class="dropdown">
+					<button class="dropdown-toggle" type="button" style="border-style: none;" id="userProfileDropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+					  <img src="{% static 'img/avatar-img.jpg' %}" style="border-radius: 50% !important;"  alt="Avatar" width="50" height="50">
+
+					</button>
+					<div class="dropdown-menu" aria-labelledby="userProfileDropdown">
+					  <h6 class="dropdown-header"><a href="{% url 'user_profile'  %}">User Profile</a></h6>
+					  <a class="dropdown-item" href="{% url 'customer_logout' %}">Logout</a>
+					</div>
+				  </div>
+			</li>
+			{% else %}
+			<li class="nav-item"><a class="nav-link" href="{% url 'customer_signin' %}">Sign in</a></li>
+			<li class="nav-item"><a class="nav-link" href="{% url 'customer_signUp' %}">Sign Up</a></li>
+			{% endif %}
+
+		  </ul>
+		</div>
+	  </nav>
+</header>
+<div style="height:40px;"></div>
+<body>
+   
+<div style="text-align: center;" class="mt-5"><h1>My Orders</h1></div>
+<div class="my-5 ml-5">
+    <a href="{% url 'user_profile' %}" class="genric-btn success">Back</a>
+  </div>
+<section>
+    
+      <table class="table table-hover" id="myTable" style="border-top: 1px solid gray;">
+        <thead>
+            <tr>
+                <th class="center">Index</th>
+                <th class="center">Order Id</th>
+                <th class="center">Date</th>
+                <th class="center">Customer Name</th>
+                <th class="center">Address</th>
+                <th class="center">Phone Number</th>
+                <th class="center">Payment Type</th>
+                <th class="center">Total</th>
+                <th class="center">Order Details</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for order in orders %}
+            <tr>
+				<td class="center">{{ forloop.counter }}</td>
+				<td class="center">{{ order.orderid }}</td>
+				<td class="center">{{ order.date_added }}</td>
+				<td class="center">{{ order.address.firstname }}</td>
+				<td class="center">{{ order.address.housename }},<br>
+					{{ order.address.locality }},<br> 
+					{{ order.address.city }},<br> 
+					{{ order.address.state }},<br>
+					{{ order.address.pincode }}</td>
+				<td class="center">{{ order.address.phonenumber }}</td>
+				<td class="center">{{ order.payment.payment_method }}</td>
+				<td class="center">{{ order.total }}</td>
+				<td class="center">
+					<div class="ml-5">
+						<a class="genric-btn success" href="{% url 'user_order_details' order.id %}">Order Details</a><br><br>
+					</div>	
+					<a  onclick="downloadInvoice({{ order.id }})" class="genric-btn success" style="color: white;">Download PDF</a>
+					<a onclick="downloadInvoiceExcel({{ order.id }})" class="genric-btn success" style="color: white;">Download Excel</a>			
+			</td> 
+				</tr>
+            {% endfor %}
+        </tbody>
+      </table>
+</section>
+<div style="height: 150px;"></div>
+</body>
+	<!-- start footer Area -->
+	<footer class="footer-area section_gap position: fixed;	margin-bottom: 0;">
+		<div class="container">
+			<div class="row">
+				<div class="col-lg-3  col-md-6 col-sm-6">
+					<div class="single-footer-widget">
+						<h6>About Us</h6>
+						<p>
+							Upmarket boutique with chic, original takes on traditional women's garments for special occasions.
+						</p>
+					</div>
+				</div>
+			</div>
+		</div>
+	</footer>
+	<!-- End footer Area -->
+
+	<script src="{% static 'js/vendor/jquery-2.2.4.min.js' %}"></script>
+	<script src="{% static 'js/vendor/bootstrap.min.js' %}"></script>
+	<script src="{% static 'js/jquery.ajaxchimp.min.js' %}"></script>
+	<script src="{% static 'js/jquery.nice-select.min.js' %}"></script>
+	<script src="{% static 'js/jquery.sticky.js' %}"></script>
+	<script src="{% static 'js/countdown.js' %}"></script>
+	<script src="{% static 'js/jquery.magnific-popup.min.js' %}"></script>
+	<script src="{% static 'js/owl.carousel.min.js' %}"></script>
+	<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCjCGmQ0Uq4exrzdcL6rvxywDDOvfAu6eE"></script>
+	<script src="{% static 'js/gmaps.min.js' %}"></script>
+	<script src="{% static 'js/main.js' %}"></script>
+	<script type="text/javascript" src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+	<script type="text/javascript" src="https://cdn.datatables.net/v/dt/dt-1.10.25/datatables.min.js"></script></body>
+
+<script>
+  
+    $(document).ready(function() {
+        $('#myTable').DataTable();
+    });
+
+	function downloadInvoice(orderId) {
+    console.log(orderId);
+    fetch("/user_orders/download_invoice/", {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            "X-CSRFToken": "{{ csrf_token }}"
+        },
+        body: JSON.stringify({
+            orderId: orderId
+        })
+    })
+    .then(response => {
+        if (response.ok) {
+            return response.blob();
+        } else {
+            throw new Error('Network response was not ok');
+        }
+    })
+    .then(blob => {
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'invoice.pdf';
+        a.click();
+        URL.revokeObjectURL(url);
+    })
+    .catch(error => {
+        console.error('There was a problem with the fetch request:', error);
+    });
+}
+
+function downloadInvoiceExcel(orderId) {
+    console.log(orderId);
+    var xhr = new XMLHttpRequest();
+    xhr.open('POST', '/download_invoice_excel/', true);
+    xhr.setRequestHeader('Content-Type', 'application/json');
+    var csrftoken = getCookie('csrftoken');
+    xhr.setRequestHeader('X-CSRFToken', csrftoken);
+    xhr.responseType = 'blob';
+    xhr.onload = function(e) {
+        if (this.status == 200) {
+            var blob = new Blob([this.response], {type: 'application/vnd.ms-excel'});
+            var link = document.createElement('a');
+            link.href = window.URL.createObjectURL(blob);
+            link.download = 'invoice_' + orderId + '.xls';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        } else {
+            console.error('Failed to download invoice.');
+        }
+    };
+    xhr.send(JSON.stringify({orderId: orderId}));
+}
+
+function getCookie(name) {
+    var cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        var cookies = document.cookie.split(';');
+        for (var i = 0; i < cookies.length; i++) {
+            var cookie = cookies[i].trim();
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
+
+</script>
+<script type="text/javascript" src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+	<script type="text/javascript" src="https://cdn.datatables.net/v/dt/dt-1.10.25/datatables.min.js"></script></body>
+  </html>

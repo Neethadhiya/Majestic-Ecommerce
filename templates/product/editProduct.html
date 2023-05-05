@@ -1,0 +1,254 @@
+{% load static %}
+{% include 'admin/adminHeader.html' %}
+<div class="container">
+    <div class="row">
+        <div class="col-xl-3"></div>
+        <div class="col-xl-9">
+          <div class="my-5 ml-5">
+            <a href="{% url 'productManagement'  %}" class="btn btn-primary">Back</a>
+          </div>
+            <!-- Basic Examples -->
+            <div class="card card-default" style="margin-top: 40px;">
+                <div class="card-header">
+                    <h2>Edit Product Details</h2>
+                </div>
+                {% if messages %}
+                <ul class="messages">
+                    {% for message in messages %}
+                    <li {% if message.tags %}class="{{ message.tags }}
+                        text-danger"{% endif %}>{{ message }}</li>
+                    {% endfor %}
+                </ul>
+                {% endif %}
+                <div class="card-body">
+                    <form method="post" action="{% url 'updateProduct' products.id %}"
+                        enctype="multipart/form-data" onsubmit="return formValidation()">
+                        {% csrf_token %}
+                        <div class="form-group pt-5">
+                            <label for="exampleFormControlInput2" style="padding-bottom: 15px;">Category</label><br>
+                            <label for="exampleFormControlInput2" style="background-color: #9E6DE0;width:170px;height:40px;text-align: center;border-radius: 5px;padding-top: 7px;color: white;" >{{ products.category }}</label>
+                        </div>
+                         <div class="form-group pt-5">
+                            <label for="exampleFormControlInput2">Product Name</label>
+                            <input type="text" class="form-control" id="name"
+                                name="name" value="{{ products.product_name }}" placeholder="Product Name">
+                        </div>
+                        <div class="form-group">
+                            <label for="exampleFormControlTextarea1">Description</label>
+                            <textarea class="form-control" id="description"
+                                name="description" rows="3" placeholder="Description">{{ products.description }}</textarea>
+                        </div>
+            <div class="form-group">
+                <div><label for="multiple-select" class=" form-control-label">Add Variant*</label></div>
+                <div class="col col-md-12">
+                    <label for="exampleFormControlInput2" style="background-color: #9E6DE0;width:470px;height:40px;text-align: center;border-radius: 5px;padding-top: 8px;color: white;" >
+                        Variant options  ( Small, Medium, Large, XL )
+                    </label>
+                   
+                {% if products.variants.all %}
+                {% for variant in products.variants.all %}
+                  <div id="input-group-1" style="padding-top: 16px;border-bottom: 1px solid black !important;padding-bottom: 16px;" class="{{ variant.id }}">
+                    <label for="multiple-select" class=" form-control-label mx-4" style="width:200px">Size</label><br>
+                    <input type="text" placeholder="Variant" class="form-control" name="size" value="{{ variant.variant_name }}" required>&nbsp&nbsp&nbsp&nbsp&nbsp
+                    <label for="multiple-select" class=" form-control-label mt-3 mx-4" style="width:200px">Stock</label>   
+                    <input type="number" placeholder="Stock" min="0" class="form-control" name="stock" value="{{ variant.stock }}" required>&nbsp&nbsp&nbsp&nbsp&nbsp
+                    <label for="multiple-select" class=" form-control-label mt-3"style="width:200px">Price</label>                
+                    <input type="number" placeholder="Price" min="0" class="form-control" style="margin-bottom: 18px;" name="price" value="{{ variant.price }}" required>&nbsp&nbsp&nbsp&nbsp&nbsp
+                    <button class="btn btn-primary del">delete</button>
+                  </div>
+                {% endfor %}
+                {% else %}
+                <div id="input-group-1" style="padding-top: 16px;" class="{{ variant.id }}">
+                  <label for="multiple-select" class=" form-control-label mx-4" style="width:200px">Size</label><br>
+                  <input type="text" placeholder="Variant" class="form-control" name="size" value="{{ variant.variant_name }}" required>&nbsp&nbsp&nbsp&nbsp&nbsp
+                  <label for="multiple-select" class=" form-control-label mt-3" style="width:200px;">Stock</label>   
+                  <input type="number" placeholder="Stock" class="form-control" name="stock" value="{{ variant.stock }}" required>&nbsp&nbsp&nbsp&nbsp&nbsp
+                  <label for="multiple-select" class=" form-control-label mt-3"style="width:200px">Price</label>                
+                  <input type="number" placeholder="Price"  class="form-control" name="price" value="{{ variant.price }}" required>&nbsp&nbsp&nbsp&nbsp&nbsp
+                  <button class="btn btn-primary del">del</button>
+                </div>
+                {% endif %}
+                    <div style="padding-top:30px;">
+                      <button type="button" class="btn btn-primary  onclick="addInputGroup()">Add More</button>
+                    </div>
+              </div>
+            </div>
+
+            <div class="form-group">
+                <label for="exampleFormControlFile1">Images</label><br>
+                {% for image in products.productImages.all %}
+                    
+                    <div class="d-flex px-5 py-3">
+                      <img src="{{ image.image.url }}" alt="{{ product.product_name }}" width="50"><br>          
+                      <button type="button" class="btn" data-toggle="modal" data-target="#exampleModal{{ forloop.counter }}{{ product.id }}-{{ image.id }}" style="border-color: white;">
+                        Delete
+                      </button>
+                    </div>
+
+                    <div class="modal fade" id="exampleModal{{ forloop.counter }}{{ product.id }}-{{ image.id }}" tabindex="-1"  role="dialog" aria-labelledby="exampleModalLabel{{ forloop.counter }}{{ product.id }}-{{ image.id }}"
+                      aria-hidden="true">
+                      <div class="modal-dialog" role="document">
+                        <div class="modal-content">
+                          <div class="modal-header">
+                            <h5 class="modal-title" id="exampleModalLabel{{ forloop.counter }}{{ product.id }}-{{ image.id }}">
+                              Are you sure you want to delete?
+                            </h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                              <span aria-hidden="true">&times;</span>
+                            </button>
+                          </div>
+                          <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">No</button>
+                            <a href="{% url 'delete_single_image_edit' image.id %}">
+                              <button type="button" class="btn btn-primary" >
+                                Yes
+    
+                              </button>
+                            </a>
+                          </div>   
+                        </div>
+                      </div>
+                    </div>
+                {% endfor %}
+
+                <input type="file" class="form-control-file" id="images"
+                    name="images" multiple onchange="previewImages()">
+                <div class="user-area " id="preview">
+                </div>
+            </div>
+            
+            <div class="form-footer mt-6">
+                <button type="submit" class="btn btn-primary ">Update Product</button>
+            </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+    <div>
+<script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+<script>
+     function formValidation() {
+        var name = document.getElementById('name').value.trim();
+        var description = document.getElementById('description').value.trim();
+        var stock = document.getElementsByName('stock');
+        var price = document.getElementsByName('price');
+
+        if (name === "") {
+          swal("Please enter a product name.");
+          return false;
+        }
+
+        if (description === "") {
+            swal("Please enter a product description.");
+            return false;
+        }
+  
+        for (var i = 0; i < stock.length; i++) {
+            if (stock[i].value === "" || isNaN(stock[i].value)) {
+            swal("Please enter a valid stock value.");
+            return false;
+        }
+
+        if (price[i].value === "" || isNaN(price[i].value)) {
+            swal("Please enter a valid price value.");
+            return false;
+        }
+        if (stock[i].value<0) {
+            swal("Please enter a valid stock value.");
+            return false;
+        } 
+
+        if (price[i].value <0) {
+            swal("Please enter a valid price value.");
+            return false;
+        }
+      }
+      return true;
+}
+function validateVariants(select) {
+      var variants = {};
+      var valid = true;
+      $('.variant-group').each(function() {
+      var variant = $(this).val();
+      if (variant in variants) {
+          valid = false;
+          return false;
+      } else {
+          variants[variant] = true;
+      }
+  });
+  if (!valid) {
+      alert('Error: Two or more input groups have the same "variant" value.');
+      return false;
+  }
+  return true;
+}
+      function addInputGroup() {
+          var inputGroups = document.querySelectorAll("[id^='input-group-']");
+          var lastInputGroup = inputGroups[inputGroups.length - 1];
+          var newInputGroup = lastInputGroup.cloneNode(true);
+          class_name = newInputGroup.className
+          newInputGroup.classList.remove(class_name)
+          class_name = parseInt(class_name)+1
+          newInputGroup.classList.add(class_name)
+          const myButton = newInputGroup.querySelector('button');
+          myButton.addEventListener('click', function(event) {
+            event.preventDefault();
+            console.log(this);
+            this.parentNode.remove()
+          });
+          var inputs = newInputGroup.querySelectorAll("input");
+          inputs.forEach(function (input) {
+              input.value = "";
+           
+          });
+          lastInputGroup.after(newInputGroup);
+      }
+      function previewImages() {
+    const preview = document.getElementById('preview');
+    const files = document.getElementById('images').files;
+
+    for (let i = 0; i < files.length; i++) {
+      const file = files[i];
+      const reader = new FileReader();
+
+      reader.addEventListener("load", function () {
+        const img = document.createElement("img");
+        img.src = reader.result;
+        img.classList.add("user-avatar");
+        img.style.width = "54px";
+        img.style.height = "80px";
+        img.style.marginTop="15px";
+        img.style.marginLeft="25px";
+        const div = document.createElement("div");
+        div.classList.add("image-preview");
+
+        const removeBtn = document.createElement("button");
+        removeBtn.style.paddingLeft="20px";
+        removeBtn.style.color="#87888c";
+        removeBtn.textContent = "DELETE";
+        removeBtn.addEventListener("click", function() {
+        div.remove();
+        });
+
+        div.appendChild(img);
+        div.appendChild(removeBtn);
+        preview.appendChild(div);
+      }, false);
+
+      if (file) {
+        reader.readAsDataURL(file);
+      }
+    }
+  }
+  const buttons = document.querySelectorAll('.del');
+  buttons.forEach(button => {
+    button.addEventListener('click', function(event) {
+      event.preventDefault();
+      this.parentNode.remove()
+    });
+  });
+  
+</script>
+{% include 'admin/adminFooter.html' %}

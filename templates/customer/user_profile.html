@@ -1,0 +1,102 @@
+{% extends 'base/base.html' %}
+{% block content %}
+{% load static %}
+
+	
+	<!--================Order Details Area =================-->
+	<section class="order_details section_gap">
+		<div class="container">
+			{% if messages %}
+			<ul class="messages">
+				{% for message in messages %}
+				<li {% if message.tags %}class="{{ message.tags }}
+					text-danger"{% endif %}>{{ message }}</li>
+				{% endfor %}
+			</ul>
+			{% endif %}
+			<div class="my-5 ml-5">
+				<a href="{% url 'index' %}" class="genric-btn success">Back</a>
+			  </div>
+			<div class="order_details_table" style="text-align: center;">
+				<h2>My Account</h2>
+				<aside class="single_sidebar_widget author_widget" >
+					<img class="author_img rounded-circle" src="{% static 'img/avatar-img.jpg' %}" width="200px" height="200px" style="display: block; margin: 0 auto;" alt="avatar-img">
+					<br>
+					<h4>{{ user_details.first_name }}</h4>
+					<h4>{{ user_details.email }}</h4>
+					<h4>{{ user_details.phone_number }}</h4>
+					<a href="{% url 'change_password' %}" class="genric-btn success">Change Password</a>
+					<a href="{% url 'user_orders' user_details.id %}" class="genric-btn success">My Orders</a>
+					<a href="{% url 'user_edit_profile' user_details.id %}" class="genric-btn success">Edit Profile</a>
+					<a href="{% url 'add_address' %}" class="genric-btn success">Add Address</a>
+					<a href="{% url 'user_wallet' %}" class="genric-btn success">My Wallet</a>
+					<div class="br"></div>
+				</aside>
+			</div>
+		</div>
+	</section>
+	
+	<section class="lattest-product-area pb-40 category-list ">
+		<div class="container-fluid" style="padding-left: 150px;">
+		<div class="row" style="text-align: center;">
+			<!-- single product -->
+			{% for address in addresses %}
+			<div class="col-lg-4 col-md-6" >
+				<div class="single-product">
+					<div class="card" style="width: 18rem;">
+	
+					<h4 style="padding-top: 20px;">Address {{ forloop.counter }}</h4>
+					<div class="card-body">
+
+					<ul class="list" style="padding-bottom: 20px;">
+						<li><a href="#">{{ address.firstname }}&nbsp;&nbsp;{{ address.lastname }}</a></li>
+						<li><a href="#">{{ address.housename }}</a></li>
+						<li><a href="#">{{ address.locality }}</a></li>
+						<li><a href="#">{{ address.city }}</a></li>
+						<li><a href="#">{{ address.state }}</a></li>
+						<li><a href="#">{{ address.pincode }}</a></li>
+						<li><a href="#">{{ address.phonenumber }}</a></li>
+					</ul>
+
+					<a href="{% url 'editAddress' address.id %}" class="genric-btn primary success">Edit</a>&nbsp;&nbsp;
+					<button type="button"class="genric-btn primary success" data-toggle="modal" data-target="#exampleModal{{ forloop.counter }}{{ product.id }}-{{ image.id }}" style="border-color: white;">
+						Delete
+					  </button>
+					  <div class="modal fade" id="exampleModal{{ forloop.counter }}{{ product.id }}-{{ image.id }}" tabindex="-1"  role="dialog" aria-labelledby="exampleModalLabel{{ forloop.counter }}{{ product.id }}-{{ image.id }}"
+						aria-hidden="true">
+						<div class="modal-dialog" role="document">
+						  <div class="modal-content">
+							<div class="modal-header">
+							  <h5 class="modal-title" id="exampleModalLabel{{ forloop.counter }}{{ product.id }}-{{ image.id }}">
+								Are you sure you want to delete?
+							  </h5>
+							  <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+								<span aria-hidden="true">&times;</span>
+							  </button>
+							</div>
+							<!-- <img src="https://img.icons8.com/color/48/null/delete-forever.png"/> -->
+							<div class="modal-footer">
+							  <button type="button" class="btn btn-secondary" data-dismiss="modal">No</button>
+							  <a href="{% url 'removeAddress' address.id  %}">
+								<button type="button" class="btn btn-primary" >
+								  Yes
+								</button>
+							  </a>
+							</div>   
+						  </div>
+						</div>
+					  </div>
+					  
+					  
+					</div>
+
+					</div>
+				</div>
+			</div>
+			{% endfor %}
+		</div>
+		</section>
+	
+	<!--================End Order Details Area =================-->
+	
+{% endblock %}

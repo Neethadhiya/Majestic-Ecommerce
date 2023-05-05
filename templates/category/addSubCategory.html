@@ -1,0 +1,69 @@
+{% load static %}
+{% include 'admin/adminHeader.html' %}
+<div class="container">
+    <div class="row">
+        <div class="col-xl-3"></div>
+        <div class="col-xl-9">
+            <!-- Basic Examples -->
+            <div class="card card-default" style="margin-top: 40px;">
+                <div class="card-header">
+                    <h2>Add Sub Category</h2>
+                </div>
+                <div class="card-body">
+
+                    <form method="post" action="{% url 'addCategory' %}"
+                        enctype="multipart/form-data" onsubmit="return
+                        formValidation()">
+                        {% csrf_token %}
+                        {% if messages %}
+                        <ul class="messages">
+                            {% for message in messages %}
+                            <li {% if message.tags %}class="{{ message.tags }}
+                                text-danger"{% endif %}>{{ message }}</li>
+                            {% endfor %}
+                        </ul>
+                        {% endif %}
+                        <label for="exampleFormControlInput2">Select Category Name</label><br>
+
+                        <select name="subCategory" id="subCategory" style="width:160px;height:36px;color:white;background-color: #9E6DE0;border-radius: 15px;border: none;">
+                            {% for category in categories %}
+                            <option value="{{ category.id }}" selected="selected">{{ category.category_name }}</option>
+                            {% endfor %}
+                          </select>
+                        
+                        <div class="form-group">
+                            <label for="exampleFormControlInput2">Sub Category Name</label>
+                            <input type="text" class="form-control" id="name"
+                                name="name"
+                                placeholder="Sub Category Name">
+                        </div>
+
+                        <div class="form-footer mt-6">
+                            <button type="submit" class="btn btn-primary
+                                btn-pill">Add Sub Category</button>
+                        </div>
+                    </form>
+
+                </div>
+            </div>
+        </div>
+    </div>
+    <div>
+        {% include 'admin/adminFooter.html' %}
+
+        <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+        <script>
+            
+        // Select all input elements for varification
+     const name = document.getElementById("name").value;    
+     // function for form varification
+     function formValidation() {
+       
+       // checking name length
+       if(name=="" && name==null){
+              swal("Please enter sub category name");                
+              return false;
+            }
+       
+     }
+     </script>

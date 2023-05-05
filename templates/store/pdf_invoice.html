@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Invoice</title>
+	<style>
+		body {
+			font-family: Arial, sans-serif;
+		}
+		table {
+			border-collapse: collapse;
+			width: 100%;
+		}
+		th, td {
+			padding: 8px;
+			text-align: left;
+			border-bottom: 1px solid #ddd;
+		}
+		th {
+			background-color: #f2f2f2;
+		}
+		.invoice-header {
+			display: flex;
+			flex-direction: column;
+			justify-content: space-between;
+			align-items: center;
+			margin-bottom: 40px;
+		}
+		.invoice-number {
+			font-size: 24px;
+			font-weight: bold;
+			margin-bottom: 10px;
+		}
+		
+		.total-amount {
+			font-size: 18px;
+			font-weight: bold;
+			text-align: right;
+		}
+		.center{
+			text-align: center;
+		}
+	</style>
+</head>
+<body>
+	<div class="invoice-header">
+		<h1 style="text-align: center; margin-top: 0;">Invoice</h1>
+        <div>
+				<p class="invoice-address">
+					<strong>Customer Name&nbsp;&nbsp;-{{ address.firstname }}&nbsp;&nbsp;{{ address.lastname }}</strong><br>
+					Invoice No&nbsp;&nbsp;- {{ invoice_no }}<br>
+					Address&nbsp;&nbsp; -	{{ address.housename }}, {{ address.locality }}<br>
+					{{ address.city }}, {{ address.state }}<br>
+					{{ address.pincode }}<br>
+					{{ address.phonenumber }}<br>
+					Date&nbsp;&nbsp;-&nbsp;&nbsp;{{ date }}</p>
+		</div>
+	</div>
+	<table>
+		<thead>
+			<tr>
+                <th class="center">Index</th>
+                <th class="center">Product</th>
+                <th class="center">Size</th>
+                <th class="center">Quantity</th>
+                <th class="center">Price</th>
+				<th class="center">Offer Discount</th>
+                <th class="center">Sub Total</th>
+                <th class="center">Order Status</th>
+			</tr>
+		</thead>
+		<tbody>
+            {% for order_product in order_products %}
+			<tr>
+				<td class="center">{{ forloop.counter }}</td>
+				<td class="center">{{ order_product.variant.product.product_name }}</td>
+				<td class="center">{{ order_product.variant.variant_name }}</td>
+				<td class="center">{{ order_product.quantity }}</td>
+                <td class="center">{{ order_product.variant.price }}</td>
+				<td class="center">{{ order_product.offer_discount }}</td>
+				<td class="center">{{ order_product.sub_total }}</td>
+				<td class="center">{{ order_product.status }}</td>
+			</tr>
+			{% endfor %}
+
+			<tr>
+				
+				<td colspan="4" style="text-align: right;"><strong> Grand Total</strong></td>
+				<td colspan="4" ><strong>{{total}}</strong></

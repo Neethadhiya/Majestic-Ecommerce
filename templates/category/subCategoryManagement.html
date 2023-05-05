@@ -1,0 +1,78 @@
+{% load static %}
+{% include 'admin/adminHeader.html' %}
+<!-- ====================================
+      ——— PAGE WRAPPER
+      ===================================== -->
+<div class="page-wrapper">
+  <!-- Header -->
+  <!-- ====================================
+        ——— CONTENT WRAPPER
+        ===================================== -->
+  <div class="card-header">
+    <h2>Sub Category Management</h2>
+  </div>
+  <div class="card-body">
+    <table class="table">
+      <thead>
+        <tr class="table-primary">
+          <th scope="col">#</th>
+          <th scope="col">Sub Category Name</th>
+          <th></th>
+          <th scope="col">Action</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for category in categories %}
+        <tr>
+          <td scope="row">{{ category.id }}</td>
+          <td>{{ category.category_name }}</td>
+            {% if category.is_active %}
+            <td><a href='blockCategory/{{ category.id }}/'><button type="button"
+                  class="mb-1 btn btn-pill btn-primary">Block</button></td>
+                {% else %}
+                <td>
+                <a href='blockCategory/{{ category.id }}/'><button
+                    type="button" class="mb-1 btn btn-pill btn-primary">UnBlock</button></a>
+                  </td>
+                {% endif %}
+              
+              <td>
+                <button type="button" data-toggle="modal"
+                  data-target="#exampleModal" style="border-color: white;">
+                  <img
+                    src="https://img.icons8.com/color/48/null/filled-trash.png"/>
+                </button>
+                <div class="modal fade" id="exampleModal" tabindex="-1"
+                  role="dialog" aria-labelledby="exampleModalLabel"
+                  aria-hidden="true">
+                  <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                      <div class="modal-header">
+                        <h5 class="modal-title" id="exampleModalLabel">Are you
+                          sure you want to delete?</h5>
+                        <button type="button" class="close" data-dismiss="modal"
+                          aria-label="Close">
+                          <span aria-hidden="true">&times;</span>
+                        </button>
+                      </div>
+
+                      <!-- <img src="https://img.icons8.com/color/48/null/delete-forever.png"/> -->
+                      <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary"
+                          data-dismiss="modal">No</button>
+                        <a href="deleteCategory/{{ category.id }}"><button
+                            type="button"
+                            class="btn btn-primary">Yes</button></a>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Footer -->
+      {% include 'admin/adminFooter.html' %}

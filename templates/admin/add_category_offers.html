@@ -1,0 +1,81 @@
+{% load static %}
+{% include 'admin/adminHeader.html' %} 
+<body>
+	<div class="container py-5">
+		<div class="row">
+			<div class="ml-5">
+				<a href="{% url 'display_offers' %}" class="btn btn-primary">Back</a>
+			  </div>
+			<div class="col-md-2"></div>
+				<div class="col-md-10">
+					<div style="text-align: center;"> 
+						<h2 class="mb-4">Add Category Offer</h2>
+					</div>
+					<form method="post" action="{% url 'add_category_offers' %}">
+						{% csrf_token %}
+						{% if messages %}
+						<ul class="messages">
+							{% for message in messages %}
+							<li {% if message.tags %}class="{{ message.tags }}
+								text-danger"{% endif %}>{{ message }}</li>
+							{% endfor %}
+						</ul>
+						{% endif %}
+						<div class="mb-3">
+							<label for="category" class="form-label">Select Category*</label>
+							<select class="form-select" id="category" name="category" >
+							{% for category in categories %}
+								<option value="{{ category.id }}">{{ category.category_name }}</option>
+							{% endfor %}
+							</select>
+						</div>
+						<div class="mb-3">
+							<label for="discount_percentage" class="form-label">Discount Percentage*</label>
+							<input type="number" class="form-control" id="discount_percentage" name="discount_percentage" min="0" max="99" placeholder="Discount Percentage">
+							<span style="color: red;" id="discount-percentage-error"></span>
+						</div>
+						<button type="submit" class="btn btn-primary" id="add-offer">Add Offer</button>
+					</form>
+				</div>
+			</div>
+		</div>
+	</body>
+<script>
+	 const form1 = document.querySelector("#form1");  
+     const discountPercentage = document.querySelector("#discount_percentage");
+     const discountPercentageError = document.getElementById("discount-percentage-error");
+     const percentagePattern  =/\b[1-9]|[1-9][0-9]?\b/;
+
+	const percentageFunction = () => {
+    	if (!percentagePattern.test(discountPercentage.value)) {
+			discountPercentageError.textContent = "Percentage should be a number between 0 & 99";
+     		return false;
+    	}else if( discountPercentage.value<0 || discountPercentage.value>99){
+			discountPercentageError.textContent = "Discount should a positive number between 0 and 99";
+      		return false;
+    	} else {
+			discountPercentageError.textContent = "";
+      		return true;
+    	}
+ 	};
+ 
+  	discountPercentage.addEventListener("input", percentageFunction);
+  	let isFormValid = false;
+  	const formFunctions = [
+ 							percentageFunction,
+  	];
+
+  	document.getElementById("add-offer").addEventListener("click", event => {
+    if (formFunctions.every(fn => fn())) {
+      	isFormValid = true;
+    }
+    if (!isFormValid) {
+      	event.preventDefault();
+     	 swal("Form is not valid!");
+    } else {
+      form.submit();
+    }
+  });
+
+</script>
+{% include 'admin/adminFooter.html' %}

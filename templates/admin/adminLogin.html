@@ -1,0 +1,89 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+    <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+
+    <title>AdminLogin</title>
+</head>
+<body>
+  {% if messages %}
+				<ul class="messages">
+					{% for message in messages %}
+					<li {% if message.tags %}class="{{ message.tags }} text-danger"{% endif %}>{{ message }}</li>
+				{% endfor %}
+				</ul>
+				{% endif %}
+    <form autocomplete='off' class='form' method="post" action="{% url 'adminLogin' %}" onsubmit="return formValidate()">
+      {% csrf_token %}
+      <div class='control'>
+          <h1>
+            Admin
+          </h1>
+        </div>
+        <label>Email</label><br><br>
+        <div class='control block-cube block-input'>
+          <input name='email' id="email" placeholder='Email' type='text'>
+          <div class='bg-top'>
+            <div class='bg-inner'></div>
+          </div>
+          <div class='bg-right'>
+            <div class='bg-inner'></div>
+          </div>
+          <div class='bg'>
+            <div class='bg-inner'></div>
+          </div>
+        </div>
+        <label>Password</label><br><br>
+        <div class='control block-cube block-input'>
+          <input name='password' id="password" placeholder='Password' type='password'>
+          <div class='bg-top'>
+            <div class='bg-inner'></div>
+          </div>
+          <div class='bg-right'>
+            <div class='bg-inner'></div>
+          </div>
+          <div class='bg'>
+            <div class='bg-inner'></div>
+          </div>
+        </div>
+        <button class='btn block-cube block-cube-hover' type='submit'>
+          <div class='bg-top'>
+            <div class='bg-inner'></div>
+          </div>
+          <div class='bg-right'>
+            <div class='bg-inner'></div>
+          </div>
+          <div class='bg'>
+            <div class='bg-inner'></div>
+          </div>
+          <div class='text'>
+            Log In
+          </div>
+        </button>
+        <div class='credits'>
+          <a href='https://codepen.io/marko-zub/' target='_blank'>
+            My other codepens
+          </a>
+        </div>
+      </form>
+      <script>
+        function formValidate(){
+                let email = document.getElementById("email").value;
+                let password = document.getElementById("password").value;
+                if(email=="" || email==null){
+                  swal("Please enter email");                
+                  return false;
+                }else if(password=="" || password==null){
+                  swal("Please enter password");                
+                    return false;
+                }
+               
+        }
+        </script>    
+</body>
+</html>
