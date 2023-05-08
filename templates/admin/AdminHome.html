@@ -1,0 +1,102 @@
+{% load static %}
+{% include 'admin/adminHeader.html' %} 
+
+<div class="page-wrapper">
+  <div class="content-wrapper">
+    <div style="text-align: center;">
+      <h1>Sales Chart</h1>               
+    </div>
+    <div class="content"> 
+      
+      <div class="row">
+        <div class="col-1">
+          <div class="dropdown">
+            <button class="btn btn-secondary dropdown-toggle" type="button" id="yearDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+              {{ year }}
+            </button>
+            <ul class="dropdown-menu" aria-labelledby="yearDropdown">
+              {% for y in years %}
+                <li><a class="dropdown-item {% if y == year %}active{% endif %}" href="?year={{ y }}&month={{ month }}">{{ y }}</a></li>
+              {% endfor %}
+            </ul>
+          </div>
+        </div>
+        <div class="col-1">
+          <div class="dropdown">
+            <button class="btn btn-secondary dropdown-toggle" type="button" id="monthDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+              {{  selected_month }}
+            </button>
+            <ul class="dropdown-menu" aria-labelledby="monthDropdown">
+              {% for m in months %}
+                <li><a class="dropdown-item {% if m.0 == month %}active{% endif %}" href="?year={{ year }}&month={{ m.0 }}" data-month="{{ m.1 }}">{{ m.1 }}</a></li>
+              {% endfor %}
+            </ul>
+          </div>
+        </div>
+        </div>
+        <div class="row">
+              <canvas id="sales-chart"></canvas>
+        </div>
+    </div>
+  </div>
+</div>
+
+<script>
+ var monthDropdown = document.getElementById("monthDropdown");
+  var monthOptions = monthDropdown.getElementsByClassName("dropdown-item");
+  for (var i = 0; i < monthOptions.length; i++) {
+    monthOptions[i].addEventListener("click", function() {
+      var monthName = this.getAttribute("data-month");
+      monthDropdown.innerHTML = "Selected Month: " + monthName;
+    });
+  }
+  $(document).ready(function() {
+    var chartData = {{ chart_data|safe }};
+    var ctx = document.getElementById('sales-chart').getContext('2d');
+    var chart = new Chart(ctx, {
+      type: 'bar',
+      data: {
+        labels: chartData.labels,
+        datasets: [{
+          label: 'Total Sales',
+          data: chartData.values,
+          backgroundColor: [
+            'rgba(255, 99, 132, 0.2)',
+            'rgba(54, 162, 235, 0.2)',
+            'rgba(255, 206, 86, 0.2)',
+            'rgba(75, 192, 192, 0.2)',
+            'rgba(153, 102, 255, 0.2)',
+            'rgba(255, 159, 64, 0.2)'
+          ],
+          borderWidth: 1
+        }]
+      },
+      options: {
+        scales: {
+          yAxes: [{
+            ticks: {
+              beginAtZero: true
+            }
+          }]
+        }
+      }
+    });
+
+    // Update chart data based on selected date range
+    $('#date-range-form').on('submit', function(event) {
+      event.preventDefault();
+      var dateRange = $('#date-range-select').val();
+      var url = '/admin/chart-data/' + dateRange + '/';
+      $.ajax({
+        url: url,
+        success: function(response) {
+          chart.data.labels = response.labels;
+          chart.data.datasets[0].data = response.values;
+          chart.update();
+        }
+      });
+    });
+  });
+</script>
+
+{% include 'admin/adminFooter.html' %}

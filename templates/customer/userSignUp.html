@@ -1,0 +1,206 @@
+{% extends 'base/base.html' %}
+{% load static %}
+{% block content %}
+<div style="padding-top: 95px;"></div>
+
+<body>
+  <section class="vh-100">
+    <div class="container py-5 h-100">
+      <div class="row d-flex justify-content-center align-items-center h-100">
+        <div class="col-12 col-md-8 col-lg-6 col-xl-5">
+          <div class="card shadow-2-strong" style="border-radius: 1rem;">
+            <div class="card-body p-5 text-center">
+
+              <h3 class="mb-5">Sign Up</h3>
+              <form method="post" id="form1" action="{% url 'customer_signUp' %}" >
+                {% csrf_token %}
+                {% if messages %}
+                <ul class="messages">
+                  {% for message in messages %}
+                  <li {% if message.tags %}class="{{ message.tags }} text-danger"{% endif %}>{{ message }}</li>
+                {% endfor %}
+                </ul>
+                {% endif %}
+              <div class="form-outline mb-4">
+                <span style="color: red;" id="name-error"></span>
+                <input type="text" id="first_name" name="first_name" class="form-control form-control-lg" />
+                <label class="form-label" for="typeEmailX-2">First name*</label>
+              </div>
+
+              <div class="form-outline mb-4">
+                <span style="color: red;" id="last-name-error"></span>
+                <input type="text" id="last_name" name="last_name" class="form-control form-control-lg" />
+                <label class="form-label" for="typePasswordX-2">Last name</label>
+              </div>
+
+              <div class="form-outline mb-4">
+                <span style="color: red;" id="email-error"></span>
+                <input type="email" id="email"  name="email" class="form-control form-control-lg" />
+                <label class="form-label" for="typeEmailX-2">Email*</label><br>
+              </div>
+
+              <div class="form-outline mb-4">
+                <span style="color: red;" id="phoneNumber-error"></span>
+                <input type="text" id="phone_number" name="phone_number" class="form-control form-control-lg" />
+                <label class="form-label" for="typeEmailX-2">Mobile*</label>
+              </div>
+
+              <b style="color: steelblue;">Password Strength : </b>
+              <label>Password must contains at least one uppercase letter, one lowercase letter, one digit, one special character with minimun of 4 characters</label>
+              <br><br>
+
+              <div class="form-outline mb-4">
+                <span style="color: red;" id="password-error"></span>
+                <input type="password" id="password" name="password" class="form-control form-control-lg" />
+                <label class="form-label" for="typeEmailX-2">Password*</label>
+              </div>
+
+              <div class="form-outline mb-4">
+                <span style="color: red;" id="confirm-password-error"></span>
+                <input type="password" id="cpassword" name="cpassword" class="form-control form-control-lg" />
+                <label class="form-label" for="typeEmailX-2">Confirm Password*</label>
+              </div>
+
+              <button class="genric-btn primary success btn-lg btn-block" type="submit">Sign Up</button>
+
+              <hr class="my-4">
+              <p>Already have an account?
+                <a class="text-blue" href="{% url 'customer_signin' %}">Sign in</a>
+              </p>
+             </form>
+             <hr class="my-4">
+
+             {% if otp %}
+			        <form method="post" action="{% url 'verify_otp' %}">
+				        {% csrf_token %}
+                <div class="form-outline mb-4">
+                  <input type="text" name="otp_code" class="form-control form-control-lg" required/>
+                  <label class="form-label" for="typeEmailX-2">OTP code</label>
+                </div>
+                <button class="genric-btn primary success btn-lg btn-block" type="submit">Verify</button>
+             </form>
+             {% endif %}
+
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</body>
+
+<script>
+  const form1 = document.querySelector("#form1");  
+  const name = document.querySelector("#first_name");
+  const lastName = document.querySelector("#last_name");
+  const email = document.querySelector("#email");
+  const phoneNumber = document.querySelector("#phone_number");
+  const password = document.querySelector("#password");
+  const cPassword = document.querySelector("#cpassword");
+
+  const nameError = document.getElementById("name-error");
+  const lastNameError = document.getElementById("last-name-error");
+  const emailError = document.getElementById("email-error");
+  const phoneNumberError = document.getElementById("phoneNumber-error");
+  const passwordError = document.getElementById("password-error");
+  const cPasswordError = document.getElementById("confirm-password-error");
+
+  const namePattern =/^[a-zA-Z]+(\s+[a-zA-Z]+)*$/;
+  const emailPattern = /^\w+([\.-]?\w+)@\w+([\.-]?\w+)(\.\w{2,3})+$/;
+  const phoneNumberPattern = /^(\+?\d{1,3}[- ]?)?(?!0)\d{10}$/;
+  const passwordPattern =/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{4,20}$/;
+  let passwordFirstInput = false;
+
+const nameFunction = () => {
+    if (!namePattern.test(name.value)) {
+      nameError.textContent = "Are you entered your name properly?";
+      return false;
+    } else {
+      nameError.textContent = "";
+      return true;
+    }
+  };
+  const lastNameFunction = () => {
+    if (!namePattern.test(lastName.value)) {
+      lastNameError.textContent = "Are you entered your last name properly?";
+      return false;
+    } else {
+      lastNameError.textContent = "";
+      return true;
+    }
+  };
+  const emailFunction = () => {
+    if (!emailPattern.test(email.value)) {
+      emailError.textContent = "Are you entered your email properly?";
+      return false;
+    } else {
+      emailError.textContent = "";
+      return true;
+    }
+  };
+const phoneNumberFunction = () => {
+    if (!phoneNumberPattern.test(phoneNumber.value)) {
+      phoneNumberError.textContent = "Are you entered your phone number properly?";
+      return false;
+    } else {
+      phoneNumberError.textContent = "";
+      return true;
+    }
+  };
+  const passwordFunction = () => {
+    if (!passwordPattern.test(password.value)) {
+      passwordError.textContent = "You have to enter a strong password";
+      return false;
+    } else {
+      passwordError.textContent = "";
+      return true;
+    }
+  }; 
+  const cPasswordFunction = () => {
+    if (cPassword.value!=password.value) {
+      cPasswordError.textContent = "Your passwords are not matching";
+      return false;
+    } else {
+      cPasswordError.textContent = "";
+      return true;
+    }
+  };
+
+ name.addEventListener("input", nameFunction);
+ lastName.addEventListener("input", lastNameFunction);
+  email.addEventListener("input", emailFunction);
+  phoneNumber.addEventListener("blur", phoneNumberFunction);
+  phoneNumber.addEventListener("input", () => {
+    if (phoneNumber.value.length > 5) {
+      phoneNumberFunction();
+    }
+  });
+  password.addEventListener("input", passwordFunction);
+  cPassword.addEventListener("input", cPasswordFunction);
+
+
+  let isFormValid = false;
+
+  const formFunctions = [
+    nameFunction,
+    lastNameFunction,
+    emailFunction,
+    phoneNumberFunction,
+    passwordFunction,
+    cPasswordFunction,
+  ];
+
+  document.getElementById("signup").addEventListener("click", event => {
+    if (formFunctions.every(fn => fn())) {
+      isFormValid = true;
+    }
+    if (!isFormValid) {
+      event.preventDefault();
+      alert("Form is not valid!");
+    } else {
+      form.submit();
+    }
+  });
+
+</script>
+{% endblock %}

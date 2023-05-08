@@ -1,0 +1,84 @@
+{% load static %}
+{% include 'admin/adminHeader.html' %}
+<body>
+	<div class="container py-5">
+		<div class="row">
+      <div class="my-5 ml-5">
+        <a href="{% url 'categoryManagement' %}" class="btn btn-primary">Back</a>
+      </div>
+      <div class="col-md-2">
+      </div>
+      <div class="col-md-10">
+        <div style="text-align: center;"> 
+          <h2>Add Category</h2>
+        </div>
+        <form method="post" action="{% url 'addCategory' %}"
+            enctype="multipart/form-data" onsubmit="return formValidation()">
+          {% csrf_token %}
+          {% if messages %}
+            <ul class="messages">
+              {% for message in messages %}
+                <li {% if message.tags %}class="{{ message.tags }} text-danger"{% endif %}>{{ message }}</li>
+              {% endfor %}
+            </ul>
+          {% endif %}
+
+            <div class="form-group">
+              <label for="exampleFormControlInput2">Category Name</label>
+              <input type="text" class="form-control" id="name" name="name"
+                placeholder="Category Name">
+                <span style="color: red;" id="category-error"></span>
+            </div>
+
+            <div class="form-footer mt-6">
+              <button type="submit" class="btn btn-primary " id="add-category">Add Category</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </body>
+  <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+  <script>
+     		const name              =   document.getElementById("name");
+        const categoryError    =   document.getElementById("category-error");
+        const namePattern      =    /^[a-zA-Z]+(\s+[a-zA-Z]+)*$/ ; 
+        const nameFunction =   () => {
+			  if (!name.value) {
+				    categoryError.textContent = "Category name is required";
+    			  return false;
+  			} else if (!namePattern.test(name.value)) {
+            categoryError.textContent = "Category name should contain upper case or lower case words with spaces";
+			      return false;
+		    } else {
+            categoryError.textContent = "";
+			      return true;
+		    }
+		};
+    name.addEventListener("input", nameFunction);
+		let isFormValid = false;
+    const formFunctions = [
+    nameFunction,
+		];
+    document.getElementById("add-category")
+		    .addEventListener("click", (event) => {
+			  if (formFunctions.every((fn) => fn())) {
+			      isFormValid = true;
+			  }
+			  if (!isFormValid) {
+			      event.preventDefault();
+			      swal("Please add category name");
+			  } else {
+			      form.submit();
+			}
+	});
+
+     function formValidation() {
+        const name = document.getElementById("name").value;    
+        if(name=="" || name==null){
+              swal("Please enter category name");                
+              return false;
+            }
+     }
+</script>
+{% include 'admin/adminFooter.html' %}

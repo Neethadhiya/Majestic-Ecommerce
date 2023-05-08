@@ -1,0 +1,103 @@
+{% load static %}
+{% include 'admin/adminHeader.html' %} 
+
+<div class="page-wrapper">
+  <div class=" ml-5">
+    <a href="{% url 'adminHome'  %}" class="btn btn-primary">Back</a>
+  </div>
+  <div style="text-align: center;"> 
+    <h2>User Management</h2>
+  </div>
+  
+  <div class="card-body"> 
+    <table class="table table-hover table-product" style="width:100%" id="myTable">
+      <thead>
+        <tr class="table-primary">
+          <th scope="col">#</th>
+          <th scope="col">First Name</th>
+          <th scope="col">Last name</th>
+          <th scope="col">Email</th>
+          <th scope="col">Mobile</th>
+          <th scope="col">Action</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for user in users %}
+
+        <tr>
+          <td scope="row">{{ forloop.counter }}</td>
+          <td>{{ user.first_name }}</td>
+          <td>{{ user.last_name }}</td>
+          <td>{{ user.email }}</td>
+          <td>{{ user.phone_number }}</td>
+          <input id="user-id" type="hidden" value="{{ user.id }}">
+            <td>
+              {% if user.is_blocked %}
+              <button type="button" onclick="blockuser('{{ user.id }}')" id="block-btn{{ user.id }}" class="mb-1 btn btn-primary" style="border-style: none;" >
+                UnBlock
+              </button>
+              {% else %}
+              <button type="button" onclick="blockuser('{{ user.id }}')" id="block-btn{{ user.id }}" class="mb-1 btn btn-primary" style="border-style: none;" >
+                Block
+              </button>
+              {% endif %}
+              
+            </td>         
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>  
+  {% include 'admin/adminFooter.html' %}
+</div>
+
+<script>
+    // pagination
+    $(document).ready(function() {
+        $('#myTable').DataTable();
+    });
+    const searchInput = document.querySelector('#search-input');
+    
+    const productListss = document.querySelector('#product-list');
+    searchInput.addEventListener('keyup', function(event) {
+    const searchQuery = event.target.value.toLowerCase();
+    const products = productListss.querySelectorAll('.product');
+    products.forEach(function(product) {
+    const productName = product.querySelector('.product-title a').textContent.toLowerCase();   
+    if (productName.includes(searchQuery)) {
+        product.style.display = 'block';
+    } else {
+        product.style.display = 'none';
+    }
+  });
+});   
+
+// toggle the block button
+function blockuser(userId) {
+			fetch("blockCustomer/", {
+			method: "POST",
+			headers: {
+					"Content-Type": "application/json",
+					"X-CSRFToken": "{{ csrf_token }}"
+				},
+			body: JSON.stringify({ userId:userId})
+			})
+			.then(response => {
+			if (response.ok) {
+				return response.json();
+			} else {
+				throw new Error("Something went wrong");
+			}
+			})
+			.then(data => {
+        let blockBtn = document.getElementById("block-btn"+userId); 
+
+        if (data.is_blocked) {
+            blockBtn.innerText = "UnBlock";
+        } else {
+            blockBtn.innerText = "Block";
+        }
+		});
+}							
+
+</script>

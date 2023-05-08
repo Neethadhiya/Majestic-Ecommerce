@@ -1,0 +1,193 @@
+{% extends 'base/base.html' %}
+{% block content %}
+{% load static %}
+
+	
+<!--================Single Product Area =================-->
+<div class="product_image_area ">
+	<div class="container ">
+		<div class="row s_product_inner">
+			<div class="col-lg-6">
+				<div class="s_Product_carousel">
+					{% for image in products.productImages.all %}
+						<div class="item zoom-image" data-image="{{ image.image.url }}">
+							<img class="" src="{{ image.image.url }}"  >
+						</div>
+					{% endfor %}
+				</div>
+			</div>
+
+			<div class="col-lg-5 offset-lg-1">
+				<div class="s_product_text">
+					<h3>{{ products.product_name }}</h3>
+						<input type="hidden" id="product_id" name="product_id" value="{{ products.id }}">
+						<ul class="list">
+							<li><a class="active" href="#"><span>Category</span> : {{ products.category }}</a></li>
+						</ul>
+						<p>{{ products.description }}</p>
+						<b><label>Size</label><br></b>
+
+						{% for variant in variants %}
+							<input type="radio" id="{{ variant.variant_name }}" name="size" value="{{ variant.id }}">
+							<label for="{{ variant.variant_name }}">{{ variant.variant_name }}</label><br>
+						{% endfor %}
+
+						<h1><span id="price">Rs: {{ products.variants.first.price }}</span></h1>
+						<strong style="color: blue;">
+							{% if products.offer  %}
+								{{ products.offer.discount_percentage }}%OFF
+							{% endif %}
+						</strong>
+						<input type="hidden" name="variant_id" id="variant_id" value="{{ products.variants.first.id }}">
+						<div style="height:50px;"></div>
+						<div class="card_area d-flex align-items-center">
+							<div class="product__add-cart text-center">
+                                <button type="button" onclick="addToCart('{{ products.id }}')" id="add-to-cart-btn" class="genric-btn primary success" style="border-style: none;" >
+								 	Add to Cart
+								</button>
+                            </div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+<br>
+<br>
+<script> 
+function addToCart(productId) {
+		if (selectsize()){
+			const size = document.querySelector('input[name="size"]:checked').value;
+			
+			var price = $('#price').text().replace('Rs: ', '');		 
+			var variant_id = document.getElementById('variant_id').value;
+			fetch("add_to_cart/", {
+			method: "POST",
+			headers: {
+					"Content-Type": "application/json",
+					"X-CSRFToken": "{{ csrf_token }}"
+				},
+			body: JSON.stringify({ size:size,variant_id:variant_id})
+			})
+			.then(response => {
+			if (response.ok) {
+				return response.json();
+			} else {
+				throw new Error("Something went wrong");
+			}
+			})
+			.then(data => {
+				if(data.stock!=='false'){
+					document.getElementById('item_count').value = data.item_count;
+                Swal.fire({
+                    icon    :   'success',
+                    title   :   'Product added to cart',
+                    text    :   'You can view items on your cart... ',
+  					confirmButtonText: 'OK',
+                }).then((result) => {
+					if (result.isConfirmed) {
+						window.location.href = "/cart/shop_page/";
+					}
+					});	
+				}
+               else{
+					Swal.fire({
+                    icon    :   'success',
+                    title   :   'Out of stock',
+                    text    :   'Please select another product... ',
+  					confirmButtonText: 'OK',
+                }).then((result) => {
+					if (result.isConfirmed) {
+						window.location.href = "/cart/shop_page/";
+					}
+					});
+			}				
+            })
+            .catch(error => {
+                console.error(error);
+            });
+    }
+	
+}
+
+	$(document).ready(function() {
+	var price = {{ products.variants.first.price }};
+	$('#price').text('Rs: ' + price);
+
+	$('input[type=radio][name=size]').change(function() {
+		var selectedVariantId = $(this).val();
+		document.getElementById('variant_id').value=selectedVariantId
+		var variant_id = document.getElementById('variant_id').value;
+		$.ajax({
+		url: '{% url "get_variant_price" %}',
+		data: { 'variant_id': selectedVariantId },
+		dataType: 'json',
+		success: function(data) {
+			if (data.price) {
+			price = data.price;
+			$('#price').text('Rs: ' + price);
+			}
+		}
+		});
+	});
+});
+
+function selectsize() {
+	var size = document.querySelector('input[name="size"]:checked');
+  	if (!size) {
+   		 Swal.fire({
+      			icon: 'error',
+      			title: 'Size Required',
+      			text: 'Please select a size.'
+   		 });
+    	return false;
+  	}
+  	return true;
+}
+// js for zoom image
+function changeImage(element) {
+	var main_prodcut_image = document.getElementById('main_product_image');
+	main_prodcut_image.src = element.src;
+	}
+	jQuery(document).ready(function ($) {
+	$('.zoom-image img').click(function (event) {
+		var ix = $(this).offset().left;
+		var iy = $(this).offset().top;
+		var mx = event.pageX;
+		var my = event.pageY;
+	})
+
+	$('.zoom-image img').hover(function () 
+	{
+		var img = $(this).attr('src');
+		$(this).after("<div class='hover-image' style='background-image: url(" + img + "); background-size: 300px;'></div>");
+		$(this).mousemove(function (event) {
+		// Mouse Position
+		var mx = event.pageX;
+		var my = event.pageY;
+		// Image Position
+		var ix = $(this).offset().left;
+		var iy = $(this).offset().top;
+		// Mouse Position Relavtive to Image
+		var x = mx - (ix);
+		var y = my - (iy);
+		// Image Height and Width
+		var w = $(this).width();
+		var h = $(this).height();
+		// Mouse Position Relative to Image, in %
+		var xp = (-x / w) * -100;
+		var yp = (-y / h) * -100;
+		$(this).parent().find('.hover-image').attr('style',
+			"background-image: url(" + img + "); background-size: 1000px; background-repeat: no-repeat; background-position: " + xp + "% " + yp + "%; top: " + y + "px; left: " + x + "px;");
+		});
+
+	}, function () {
+		$(this).parent().find('.hover-image').remove();
+
+	});
+
+});
+// end js for zoom image
+
+</script>
+{% endblock %}

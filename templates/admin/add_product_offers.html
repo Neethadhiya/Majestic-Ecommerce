@@ -1,0 +1,143 @@
+{% load static %}
+{% include 'admin/adminHeader.html' %} 
+<body>
+	<div class="container py-5">
+		<div class="row">
+			<div class="ml-5">
+				<a href="{% url 'display_offers' %}" class="btn btn-primary">Back</a>
+			  </div>
+			<div class="col-md-2"></div>
+				<div class="col-md-10">
+					<div style="text-align: center;"> 
+						<h2 class="mb-4">Add Product Offer</h2>
+					</div>
+                        <span style="color: red;" id="form1-error"></span>
+						{% if messages %}
+							<ul class="messages">
+								{% for message in messages %}
+									<li {% if message.tags %}class="{{ message.tags }} text-danger"{% endif %}>{{ message }}</li>
+								{% endfor %}
+							</ul>
+						{% endif %}
+                       <form method="POST" action="{% url 'add_product_offers' %}">
+                        {% csrf_token %}
+						<div class="mb-3">
+							<label for="category" class="form-label">Select Category*</label>
+							<select class="form-select" id="category" name="category">
+                                <option value="">Select Category</option>
+								{% for category in categories %}
+									<option value="{{ category.id }}">{{ category.category_name }}</option>
+								{% endfor %}
+							</select>
+							<span style="color: red;" id="category-error"></span>
+						</div>
+					
+						<div class="mb-3">
+							<label for="product" class="form-label">Select Product*</label>
+							<select class="form-select" id="product" name="product" disabled>
+								<option value="">Select a Category first</option>
+							</select>
+							<span style="color: red;" id="product-error"></span>
+						</div>
+					
+						<div class="mb-3">
+							<label for="discount_percentage" class="form-label">Discount Percentage*</label>
+							<input type="number" class="form-control" id="discount_percentage" name="discount_percentage" min="0" max="99" placeholder="Discount Percentage">
+							<span style="color: red;" id="discount-percentage-error"></span>
+						</div>
+						<button type="submit" class="btn btn-primary" id="add-offer">Add Offer</button>
+                    </form>
+				</div>
+			</div>
+		</div>
+	</body>
+<script>
+
+
+
+document.querySelector('#category').addEventListener('change', function() {
+    var categoryId = this.value;
+    if (categoryId) {
+        fetch(`get_products/?category_id=${categoryId}`, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+                "X-CSRFToken": "{{ csrf_token }}"
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            var productDropdown = document.querySelector('#product');
+            productDropdown.innerHTML = '';
+            var defaultOption = document.createElement('option');
+            defaultOption.value = '';
+            defaultOption.textContent = 'Select Product';
+            productDropdown.appendChild(defaultOption);
+            data.forEach(product => {
+                var option = document.createElement('option');
+                option.value = product.id;
+                option.textContent = product.product_name;
+                productDropdown.appendChild(option);
+            });
+            productDropdown.removeAttribute('disabled');
+        })
+        .catch(error => {
+            console.error('An error occurred while retrieving products.', error);
+        });
+    } else {
+        var productDropdown = document.querySelector('#product');
+        productDropdown.innerHTML = '<option value="">Select a Category first</option>';
+        productDropdown.setAttribute('disabled', true);
+    }
+});
+
+document.querySelector('#add-offer').addEventListener('click', function(event) {
+    event.preventDefault();
+    const category = document.querySelector('#category').value;
+    const product = document.querySelector('#product').value;
+    const discountPercentage = document.querySelector('#discount_percentage').value;
+    const productError = document.getElementById("product-error");
+    const form1Error = document.getElementById("form1-error");
+    let isValid = true;
+    let errorMessage = '';
+    if (!category && !product && !discountPercentage ) {
+        isValid = false;
+        errorMessage += '<div>Please fill all fields.</div>';
+    } else{
+    // Check if category is selected
+        if (!category) {
+            isValid = false;
+            document.getElementById("category-error").innerHTML = "Please select a category";
+        } else {
+            document.getElementById("category-error").innerHTML = "";
+        }
+
+        // Check if product is selected
+        if (!product) {
+            isValid = false;
+            productError.innerHTML = "Please select a product";
+        } else {
+            productError.innerHTML = "";
+        }
+
+        // Check if discount percentage is valid
+        if (!discountPercentage || discountPercentage < 0 || discountPercentage > 99) {
+            isValid = false;
+            document.getElementById("discount-percentage-error").innerHTML = "Please enter a valid discount percentage (between 0 and 99)";
+        } else {
+            document.getElementById("discount-percentage-error").innerHTML = "";
+        }
+   
+    }
+    // Display error message if any
+    if (!isValid) {
+        form1Error.innerHTML = errorMessage;
+    } else {
+        form1Error.innerHTML = '';
+        document.querySelector('form').submit();
+    }
+});
+
+
+</script>
+{% include 'admin/adminFooter.html' %}

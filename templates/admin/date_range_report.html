@@ -1,0 +1,89 @@
+{% load static %}
+{% include 'admin/adminHeader.html' %} 
+<style>
+	.center{
+		text-align: center;
+	}
+</style>
+<div class="page-wrapper">
+
+       <!-- Table Product -->
+       <div class="row">
+        <div class="my-5 ml-5">
+          <a href="{% url 'sales_report'  %}" class="btn btn-primary">Back</a>
+          {% if orders %}
+          <a href="{% url 'date_range_sales_pdf_download' from_date to_date %}" class="btn btn-primary">Download Pdf</a>
+          <a href="{% url 'date_range_sales_excel_download' from_date to_date  %}" class="btn btn-primary">Download Excel</a>
+          {% endif %}
+        </div>
+
+      
+        <div class="col-12">
+          <div class="card card-default">
+            <div style="text-align: center;">
+              <h2 >Sales Report&nbsp;&nbsp;({{ from_date }}, &nbsp; {{ to_date }})</h2>
+            </div>
+            <strong>
+              {% if messages %}
+              <ul class="messages">
+                  {% for message in messages %}
+                  <li {% if message.tags %}class="{{ message.tags }} text-danger"{% endif %}>{{ message }}</li>
+              {% endfor %}
+              </ul>
+              {% endif %} 
+            </strong>          
+            <div class="card-body">
+              <table class="table table-hover table-product" style="width:100%" id="myTable">
+                <thead>
+                  <tr>
+                    <th class="center">Index</th>
+                    <th class="center">Date</th>
+                    <th class="center">Order Number</th>
+                    <th class="center">Customer Name</th>
+                    <th class="center">Phone Number</th>
+                    <th class="center">Address</th>
+                    <th class="center">Payment Method</th>
+                    <th class="center">Payment status</th>
+                    <th class="center">Order Status</th>
+                    <th class="center">Total  Amount</th>
+                </tr>
+                </thead>
+
+                <tbody>
+                  {% for order in orders %}
+                <tr>
+                  <th class="center">{{ forloop.counter }}</td>
+                  <th class="center">{{ order.date_added }}</td>
+                  <th class="center">{{ order.orderid }}</td>
+                  <th class="center">{{ order.address.firstname }}{{ order.address.lastname  }}</td>
+                  <th class="center">{{ order.address.phonenumber }}</td>
+                  <th class="center">
+                      {{ order.address.housename }},<br>
+                      {{ order.address.locality }},<br> 
+                      {{ order.address.city }},<br> 
+                      {{ order.address.state }},<br>
+                      {{ order.address.pincode }}
+                  </td>
+                  <th class="center">{{ order.payment.payment_method }}</th>
+                  <th class="center">{{ order.payment.status }}</th>
+                  <th class="center">{{ order.status }}</th>
+                  <th class="center">{{ order.total }}</td>                 
+                </tr>
+                {% endfor %}
+                <tr>
+                  <td colspan="9" style="text-align: right;"><strong>Total</strong></td>
+                  <td><strong>{{ total }}</strong></td>
+                </tr>
+              </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+</div>
+<script>
+  $(document).ready(function() {
+      $('#myTable').DataTable();
+  });
+</script>
+{% include 'admin/adminFooter.html' %}

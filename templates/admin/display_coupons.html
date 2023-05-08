@@ -1,0 +1,93 @@
+{% load static %}
+{% include 'admin/adminHeader.html' %} 
+<style>
+  .center{
+    text-align: center;
+  }
+</style>
+<div class="page-wrapper">
+  <div class="ml-5">
+    <a href="{% url 'adminHome'  %}" class="btn btn-primary">Back</a>
+  </div>
+  <div style="text-align: center;margin-bottom: 25px;">
+    <h2>Coupon Management</h2>
+    </div>
+       <div class="row">
+    
+        <div class="col-12">
+          <div class="card card-default">
+           
+            
+            <div class="card-body">
+              <table class="table table-hover table-product" style="width:100%" id="myTable">
+                <thead>
+                  <tr>
+                    <th class="center">Index</th>
+                    <th class="center">Coupon Code</th>
+                    <th class="center">Discount Percentage</th>
+                    <th class="center">Disable</th>
+                </tr>
+                </thead>
+
+                <tbody>
+                    {% for coupon in coupons %}
+                  <tr>
+                    <td class="center">{{ forloop.counter }}</td>
+                    <td class="center">{{ coupon.coupon_code }}</td>
+                    <td class="center">{{ coupon.discount }}</td>
+                    {% if coupon.is_active %}
+                    <td class="center">
+                        <button type="button"  onclick="activeUser('{{ coupon.id }}')" id="active-btn{{ coupon.id }}" class="mb-1 btn btn-primary" style="border-style: none;" >
+                            Active
+                        </button>
+                    </td>
+                    {% else %}
+                    <td class="center">
+                        <button type="button"  onclick="activeUser('{{ coupon.id }}')" id="active-btn{{ coupon.id }}" class="mb-1 btn btn-primary" style="border-style: none;" >
+                            Disable
+                        </button>
+                    </td>
+                    {% endif %}
+                  </tr>
+                  {% endfor %}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+</div>
+<script>
+  $(document).ready(function() {
+      $('#myTable').DataTable();
+  });
+    function activeUser(couponId) {
+
+      fetch("block_coupon/", {
+			method: "POST",
+			headers: {
+					"Content-Type": "application/json",
+					"X-CSRFToken": "{{ csrf_token }}"
+				},
+			body: JSON.stringify({ couponId:couponId})
+			})
+			.then(response => {
+			if (response.ok) {
+				return response.json();
+			} else {
+				throw new Error("Something went wrong");
+			}
+			})
+			.then(data => {
+        let blockBtn = document.getElementById("active-btn"+couponId); 
+
+        if (data.is_active) {
+            blockBtn.innerText = "Active";
+        } else {
+            blockBtn.innerText = "Disable";
+        }
+		});
+}							
+
+</script>
+{% include 'admin/adminFooter.html' %}

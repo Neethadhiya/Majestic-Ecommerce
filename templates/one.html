@@ -1,0 +1,187 @@
+{% extends 'base/base.html' %}
+{% load static %}
+{% block content %}
+<style>
+	#search-query {
+  border: none;
+  border-radius: 4px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  padding: 8px;
+  width: 200px;
+}
+
+#search-button {
+  background-color: rgb(76,211,227);
+  border: none;
+  border-radius: 2px;
+  color: #fff;
+  cursor: pointer;
+  font-size: 16px;
+  padding: 8px 16px;
+}
+
+#search-button:hover {
+  background-color: rgb(76,211,227);
+}
+
+</style>
+<div style="padding-top: 95px;"></div>
+
+<div class="container">
+	<div class="row">
+		<div class="col-xl-3 col-lg-4 col-md-5">
+			<div class="sidebar-filter mt-50">
+				<div><strong>Product Filters</strong></div>
+				<div class="form-group">
+					<br><strong><label for="my-dropdown" >Category</label></strong><br><br>
+						<select name="category" class="form-control">
+							{% for category in categories %}
+							<option value="{{ category.id }}" id="{{ category.id }}" >{{ category.category_name }}</option>
+							{% endfor %}
+						</select>
+				</div><br>
+		
+				<div>
+					<br><strong><label>Size</label></strong><br>
+					<select  name="variant" class="form-control">
+						{% for variant in variants %}
+						<option  id="{{ variant.id }}">{{ variant }}</option>
+						{% endfor %}
+					</select>
+					<br><br>
+					<br><strong><label >Min Price</label></strong><br>
+					<input type="number" name="min" id="min" min="1" class="form-control form-control-lg" value="{{ min_price }}" />
+
+					<br><strong><label>Max Price</label></strong><br>
+					<input type="number" name="max" id="max" min="1" class="form-control form-control-lg" value="{{ max_price }}"/>
+
+				</div><br><br>
+				<button onclick="filterProduct()" class="btn btn-block genric-btn success radius" id="filter" style="border-style: none;" type="button">Filter</button>
+			</div>
+		</div>
+		<div style="height:20px;"></div>
+
+		<div class="col-xl-9 col-lg-8 col-md-7">
+			<section class="lattest-product-area pb-40 category-list">
+				<input type="text" id="search-query" placeholder="Search products">
+				<button id="search-button" onclick="searchProducts()">Search</button>
+				<div id="suggestion-box"></div>
+				<div class="row">
+					{% if messages %}
+					<ul class="messages" style="text-align: center;">
+					  {% for message in messages %}
+					  <h2>
+						<li {% if message.tags %}class="{{ message.tags }} text-danger"{% endif %}>{{ message }}</li>
+					  </h2>
+					{% endfor %}
+					</ul>
+					{% endif %}
+					<!-- single product -->
+					{% if no_product %}
+					<div style="margin-left: 300px;">
+						<img src="{% static '/img/no-products.png' %}" alt="Cart" width="450px" height="450px" >
+					</div>
+					{% endif %}
+					{% for product in products %}
+					<div class="col-lg-4 col-md-6">
+						
+						<div class="single-product">
+							<a href="{% url 'singleProduct' product.id %}">
+							<img class="img-fluid" src="{{ product.productImages.first.image.url }}"
+								alt="">
+							</a>
+							<div class="product-details">
+								<h6>{{product.product_name}}</h6>
+								<div class="price">
+									<h6>Rs: {{ product.variants.first.price }}</h6>
+									
+								</div>
+								<strong>
+									{% if product.offer  %}
+										{{ product.offer.discount_percentage }}%OFF
+									{% endif %}
+								</strong>
+								<div class="prd-bottom">
+									<a href="{% url 'singleProduct' product.id %}" class="social-info">
+										<span class="lnr lnr-move"></span>
+										<p class="hover-text">view more</p>
+									</a>
+								</div>
+								
+							</div>
+						</div>
+						
+					</div>
+					{% endfor %}
+				</section>
+			</div>
+		</div>
+	</div>
+<script>
+function filterProduct() {
+  // Get the form field values
+  const categorySelect = document.querySelector('select[name="category"]');
+  const categoryId = categorySelect.value;
+
+  const variantSelect = document.querySelector('select[name="variant"]');
+  const variantValue = variantSelect.value;
+
+  const minPriceInput = document.getElementById('min');
+  const maxPriceInput = document.getElementById('max');
+  const minPrice = minPriceInput.value;
+  const maxPrice = maxPriceInput.value;
+
+  // Construct the request payload
+  const payload = JSON.stringify({
+    category: categoryId,
+    variant: variantValue,
+    min_price: minPrice,
+    max_price: maxPrice
+  });
+
+  // Send the POST request to the server-side endpoint
+  fetch("filter_product/", {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      "X-CSRFToken": "{{ csrf_token }}"
+    },
+    body: payload
+  })
+  .then(response => {
+    if (response.ok) {
+      // handle successful response
+      window.location.href = "";
+    } else {
+      throw new Error('Network response was not ok');
+    }
+  })
+  .catch(error => {
+    console.error('There was a problem with the fetch request:', error);
+  });
+}
+function searchProducts() {
+    var query = document.getElementById('search-query').value;
+    if (query) {
+        var xhr = new XMLHttpRequest();
+        xhr.open('GET', '/search_suggestions/?q=' + encodeURIComponent(query));
+        xhr.onload = function() {
+            if (xhr.status === 200) {
+                var response = JSON.parse(xhr.responseText);
+                var suggestions = response['suggestions'];
+                var suggestionBox = document.getElementById('suggestion-box');
+                suggestionBox.innerHTML = '';
+                for (var i = 0; i < suggestions.length; i++) {
+                    var suggestion = suggestions[i];
+                    var suggestionItem = document.createElement('div');
+                    suggestionItem.textContent = suggestion;
+                    suggestionBox.appendChild(suggestionItem);
+                }
+            }
+        };
+        xhr.send();
+    }
+}
+</script>
+
+	{% endblock %}

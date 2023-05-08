@@ -1,0 +1,137 @@
+{% load static %}
+{% include 'admin/adminHeader.html' %}
+<div class="page-wrapper">
+  <div class="ml-5">
+    <a href="{% url 'adminHome'  %}" class="btn btn-primary">Back</a>
+  </div>
+    <div style="text-align: center;">
+    <h2>Product Management</h2>
+  </div>
+  
+  <div class="card-body">
+    {% if messages %}
+    <ul class="messages">
+        {% for message in messages %}
+        <li {% if message.tags %}class="{{ message.tags }}
+            text-danger"{% endif %}>{{ message }}</li>
+        {% endfor %}
+    </ul>
+    {% endif %}
+    <table class="table table-hover table-product" style="width:100%" id="myTable">
+      <thead>
+        <tr class="table-primary">
+          <th scope="col">#</th>
+          <th scope="col">Product<br> Name</th>
+          <th scope="col">Description</th>
+          <th scope="col">Category<br> Name</th>
+          <th scope="col">Variant</th>
+          <th scope="col">Actual Price</th>
+          <th scope="col">Stock</th>
+          <th scope="col">Images</th>
+          <th scope="col">Action</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for product in products %}
+        <tr>
+          <td scope="row">{{ forloop.counter }}</td>
+          <td scope="row">{{ product.product_name }}</td>
+          <td scope="row">{{ product.description }}</td>
+         
+          <td scope="row">{{ product.category }}</td>
+          <td>
+          {% for variant in product.variants.all %}
+            {{ variant.variant_name }}<br>
+          {% endfor %}
+        </td>
+        <td>
+          {% for variant in product.variants.all %}
+            {{  variant.price }}<br>
+          {% endfor %}
+          </td>
+          <td>
+          {% for variant in product.variants.all %}
+            {{ variant.stock }}<br>
+          {% endfor %}
+        </td>
+       
+        <td>
+          {% for image in product.productImages.all %}
+          <div class="my-2">
+            <img src="{{ image.image.url }}" alt="{{ product.product_name }}" width="50">  
+          </div>                            
+          {% endfor %}
+
+        </td>
+        <!-- delete product  ,modal for confirmation messsage-->
+        <td>
+          <a href="{% url 'editProduct' product.id %} " class="btn btn-primary mx-2 mb-6 mt-8">EDIT</a>
+
+          <button type="button" data-toggle="modal"
+                  data-target="#exampleModal{{ forloop.counter }}{{ product.id }}-{{ image.id }}" class="btn btn-primary " >
+                  DELETE
+                </button>
+                <div class="modal fade" id="exampleModal{{ forloop.counter }}{{ product.id }}-{{ image.id }}" tabindex="-1"
+                  role="dialog" aria-labelledby="exampleModalLabel{{ forloop.counter }}{{ product.id }}-{{ image.id }}"
+                  aria-hidden="true">
+                  <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                      <div class="modal-header">
+                        <h5 class="modal-title" id="exampleModalLabel{{ forloop.counter }}{{ product.id }}-{{ image.id }}">Are you
+                          sure you want to delete?</h5>
+                        <button type="button" class="close" data-dismiss="modal"
+                          aria-label="Close">
+                          <span aria-hidden="true">&times;</span>
+                        </button>
+                      </div>
+                      <!-- <img src="https://img.icons8.com/color/48/null/delete-forever.png"/> -->
+                      <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary"
+                          data-dismiss="modal">No</button>
+                        <a href="soft_delete_product/{{ product.id }}"><button
+                            type="button"
+                            class="btn btn-primary" >Yes</button></a>
+                      </div>   
+                    </div>
+                  </div>
+                </div>
+        </td>
+        
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% include 'admin/adminFooter.html' %}
+
+  <script>
+                $(document).ready(function() {
+    $('#myTable').DataTable();
+});
+   document.getElementById("delete-button").addEventListener("click", function() {
+    swal({
+      title: "Are you sure?",
+      text: "Once deleted, you will not be able to recover this data!",
+      icon: "warning",
+      buttons: true,
+      dangerMode: true,
+    })
+    .then((willDelete) => {
+      if (willDelete) {
+        // Perform the delete action
+        swal("Poof! Your data has been deleted!", {
+          icon: "success",
+        });
+      } else {
+        swal("Your data is safe!");
+      }
+    });
+  });
+  
+  
+  </script>
+    
+    
+    
+    
+  <!-- Footer -->

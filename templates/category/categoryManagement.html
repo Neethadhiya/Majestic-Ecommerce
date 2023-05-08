@@ -1,0 +1,74 @@
+{% load static %}
+{% include 'admin/adminHeader.html' %}
+<div class="page-wrapper">
+  <div class="ml-5">
+    <a href="{% url 'adminHome'  %}" class="btn btn-primary">Back</a>
+  </div>
+    <div style="text-align: center;">
+    <h2>Category Management</h2>
+  </div>
+  
+  <div class="card-body">
+    <table class="table table-hover table-product" style="width:100%" id="myTable">
+      <thead>
+        <tr class="table-primary">
+          <th scope="col">#</th>
+          <th scope="col">Category Name</th>
+          
+          <th></th>
+          <!-- <th scope="col">Action</th> -->
+        </tr>
+      </thead>
+      <tbody>
+        {% for category in categories %}
+        <tr>
+          <td scope="row">{{ forloop.counter }}</td>
+          <td>{{ category.category_name }}</td>
+            {% if  category.is_blocked %}
+                <td><button type="button" class="mb-1 btn  btn-primary block-btn" data-category-id="{{ category.id }}">Block</button></td>
+            {% else %}
+            <td><button type="button" class="mb-1 btn  btn-secondary block-btn" data-category-id="{{ category.id }}">UnBlock</button></td>
+          {% endif %}
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>   
+  </div>
+</div>
+</div>
+
+<script>
+  $(document).ready(function() {
+$('#myTable').DataTable();
+});
+
+$(document).ready(function() {
+  $('.block-btn').click(function() {
+    var categoryId = $(this).data('category-id');
+    var button = $(this);
+    var isBlocked = button.data('is-blocked');
+    $.ajax({
+      url: '{% url "blockCategoryAjax" %}',
+      method: 'POST',
+      data: {'category_id': categoryId},
+      success: function(response) {
+        isBlocked = response.is_blocked;
+        if (isBlocked) {
+          button.text('Block');
+          button.removeClass('btn-primary').addClass('btn-secondary');
+        } else {
+          button.text('UnBlock');
+          button.removeClass('btn-secondary').addClass('btn-primary');
+        }
+        button.data('is-blocked', isBlocked);
+      }
+    });
+    
+  });
+});
+</script>
+
+
+{% include 'admin/adminFooter.html' %}
+  

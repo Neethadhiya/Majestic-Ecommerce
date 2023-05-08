@@ -1,0 +1,70 @@
+<style>
+  table {
+  border-collapse: collapse;
+  width: 100%;
+}
+
+th, td {
+  padding: 8px;
+  text-align: left;
+  border: 1px solid #ddd;
+}
+</style>
+<div class="page-wrapper">
+    
+        <div class="col-12">
+          <div class="card card-default">
+            <div style="text-align: center;">
+              <h2 >Sales Report</h2>
+            </div>
+          
+            <div class="card-body">
+              <table class="table table-hover table-product" style="width:100%" id="myTable">
+                <thead>
+                  <tr>
+                    <th class="center" style="width: 30px">No</th>
+                    <th class="center" style="width: 53px">Date</th>
+                    <th class="center" style="width: 103px">Order Number</th>
+                    <th class="center" style="width: 98px">Customer Name</th>
+                    <th class="center">Phone Number</th>
+                    <th class="center">Address</th>
+                    <th class="center">Payment Method</th>
+                    <th class="center">Payment status</th>
+                    <th class="center">Order Status</th>
+                    <th class="center">Total  Amount</th>
+                </tr>
+                </thead>
+
+                <tbody>
+                  {% for order in orders %}
+                <tr>
+                  <th class="center">{{ forloop.counter }}</td>
+                  <th class="center">{{ order.date_added }}</td>
+                  <th class="center">{{ order.orderid }}</td>
+                  <th class="center">{{ order.address.firstname }}{{ order.address.lastname  }}</td>
+                  <th class="center">{{ order.address.phonenumber }}</td>
+                  <th class="center">
+                      {{ order.address.housename }},<br>
+                      {{ order.address.locality }},<br> 
+                      {{ order.address.city }},<br> 
+                      {{ order.address.state }},<br>
+                      {{ order.address.pincode }}
+                  </td>
+                  <th class="center">{{ order.payment.payment_method }}</th>
+                  <th class="center">{{ order.payment.status }}</th>
+                  <th class="center">{{ order.status }}</th>
+                  <th class="center">{{ order.total }}</td>                 
+                </tr>
+                {% endfor %}
+                <tr>
+                  <td colspan="9" style="text-align: right;"><strong>Total</strong></td>
+                  <td><strong>{{ total }}</strong></td>
+                </tr>
+              </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+</div>
+

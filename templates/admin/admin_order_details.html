@@ -1,0 +1,136 @@
+{% load static %}
+{% include 'admin/adminHeader.html' %} 
+<style>
+	.center{
+		text-align: center;
+	}
+</style>
+<div class="page-wrapper">
+  <div class="ml-5">
+    <a href="{% url 'admin_orders'  %}" class="btn btn-primary">Back</a>
+  </div>
+       <div class="row">
+        <div class="col-12">
+          <div >
+            <div style="text-align: center;"><h2>Order Details</h2></div>
+     
+            <div class="card-body">
+              <table class="table table-hover table-product" style="width:100%" id="myTable">
+                <thead >
+                  <tr>
+                    <th class="center">Order ID</th>
+                    <th class="center">Product</th>
+                    <th class="center">Size</th>
+                    <th class="center">Image</th>
+                    <th class="center">Quantity</th>
+                    <th class="center">Price</th>
+                    <th class="center">Offer Discount</th>
+                    <th class="center">Total</th>
+                    <th class="center">Order Status</th>
+                    <th class="center">Change Status</th>
+                    <th></th>
+                </tr>
+                </thead>
+
+                <tbody>
+                  {% for order_product in order_products %}
+                  <tr>
+                    <td class="center">{{ order_product.order.orderid }}</td>
+                    <td class="center">{{ order_product.variant.product.product_name }}</td>
+                    <td class="center">{{ order_product.variant.variant_name }}</td>
+                    <td class="center"><img src="{{ order_product.variant.product.productImages.first.image.url }}"  width="110" height="110"></td>
+                    <td class="center">{{ order_product.quantity }}</td>
+                    <td class="center">{{ order_product.variant.price }}</td>
+                    <td class="center">{{ order_product.offer_discount }}</td>
+                    <td class="center">{{ order_product.sub_total }}</td>
+                    <td class="center">{{ order_product.status }}</td>
+                    {% if order_product.status == 'Cancelled' %}
+                    <td class="center"> <a href="" class="btn btn-danger"  >Cancelled</a> </td>
+                    {% elif order_product.status == 'Returned' %}
+                    <td class="center"> <a href="" class="btn btn-danger"  >Returned</a> </td>
+                    
+                    <!-- <td>
+                      <form action="{% url 'admin_order_status' order_product.id %}" method="POST">
+                        {% csrf_token %}
+                        <select  class="form-control" name ='status' >
+                            <option>Confirmed</option>
+                            <option>Shipped</option>
+                            <option>Delivered</option>
+                        </select>
+                    </td>
+                    <td> 
+                      <button type="submit" class="btn btn-primary">Submit</button>
+                    </td>
+                  </form> -->
+                  {% elif order_product.status == 'Shipped' %}
+                  <td class="center">
+                    <div class="dropdown d-inline-block mb-1">
+                      <button class="btn btn-primary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown"
+                        aria-haspopup="true" aria-expanded="false" data-display="static">
+                        Change Status
+                      </button>
+                      <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                        <a class="dropdown-item" id="Delivered" href="#" onclick="updateStatus('{{order_product.id}}', 'Delivered')">Delivered</a>
+                      </div>
+                    </div>
+                  </td>
+                  {% elif order_product.status == 'Delivered' %}
+                  <td class="center">
+                  <button class="btn btn-primary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown"
+                  aria-haspopup="true" aria-expanded="false" data-display="static">
+                  Delivered
+                </button>
+              </td>
+                  {% else %}
+                  <td class="center">
+                    <div class="dropdown d-inline-block mb-1">
+                      <button class="btn btn-primary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown"
+                        aria-haspopup="true" aria-expanded="false" data-display="static">
+                        Change Status
+                      </button>
+                      <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                        <!-- <a class="dropdown-item" href="#" id="Confirmed{{order_product.id}}" onclick="updateStatus('{{order_product.id}}', 'Confirmed')">Confirmed</a> -->
+                        <a class="dropdown-item" id="Shipped" href="#" onclick="updateStatus('{{order_product.id}}', 'Shipped')">Shipped</a>
+                        <a class="dropdown-item" id="Delivered" href="#" onclick="updateStatus('{{order_product.id}}', 'Delivered')">Delivered</a>
+                      </div>
+                    </div>
+                  </td>
+                  
+                  {% endif %}
+                  </tr>
+                  {% endfor %}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+</div>
+<script>
+  $(document).ready(function() {
+      $('#myTable').DataTable();
+  });
+  function updateStatus(id, status) {
+    fetch("{% url 'admin_order_status' 0 %}".replace('0', id), {
+      method: "POST",
+      headers: {
+        "X-CSRFToken": "{{ csrf_token }}"
+      },
+      body: JSON.stringify({ status: status })
+    })
+    .then(response => {
+      if (!response.ok) {
+        throw new Error("HTTP error " + response.status);
+      }
+      return response.json();
+    })
+    .then(data => {
+        window.location.reload();
+    })
+    .catch(error => {
+      console.error(error);
+    });
+  }
+
+</script>
+{% include 'admin/adminFooter.html' %}

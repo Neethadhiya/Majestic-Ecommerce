@@ -1,0 +1,375 @@
+
+{% load static %}
+<!DOCTYPE html>
+<html lang="zxx" class="no-js">
+<head>
+	<!-- Mobile Specific Meta -->
+	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+	<!-- Favicon-->
+	<!-- <link rel="shortcut icon" href="{% static 'img/fav.png' %}"> -->
+	<!-- Author Meta -->
+	<meta name="author" content="CodePixar">
+	<!-- Meta Description -->
+	<meta name="description" content="">
+	<!-- Meta Keyword -->
+	<meta name="keywords" content="">
+	<!-- meta character set -->
+	<meta charset="UTF-8">
+	<!-- Site Title -->
+	<title>Majestic</title>
+	<!--
+		============================================= -->
+	<link rel="stylesheet" href="{% static 'css/linearicons.css' %}">
+	<link rel="stylesheet" href="{% static 'css/font-awesome.min.css' %}">
+	<link rel="stylesheet" href="{% static 'css/themify-icons.css' %}">
+	<link rel="stylesheet" href="{% static 'css/bootstrap.css' %}">
+	<link rel="stylesheet" href="{% static 'css/owl.carousel.css' %}">
+	<link rel="stylesheet" href="{% static 'css/nice-select.css' %}">
+	<link rel="stylesheet" href="{% static 'css/main.css' %}">
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+	<!-- cdn for image zoom -->
+	<script src="https://code.jquery.com/jquery-3.5.1.js"></script>
+		<!-- end cdn for image zoom -->
+	<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/sweetalert/2.1.2/sweetalert.min.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.0.18/dist/sweetalert2.min.js"></script>
+	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11.0.18/dist/sweetalert2.min.css">
+	<!-- jQuery CDN -->
+
+<!-- DataTables CDN -->
+<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/v/bs4/dt-1.11.3/datatables.min.css"/>
+<script type="text/javascript" src="https://cdn.datatables.net/v/bs4/dt-1.11.3/datatables.min.js"></script>
+
+
+	<!-- css for image zoom -->
+	<style>
+		.zoom-image-container {
+			position: absolute;
+			top: 50%;
+			left: 50%;
+			transform: translate(-50%, -50%);
+		}
+		
+		.zoom-image {
+			position: relative;
+		}
+		
+		.zoom-image img {
+			cursor: zoom-in;
+			box-shadow: 0 18px 5px -15px rgba( 0, 0, 0, .5 );
+		}
+		
+		.hover-image {
+		position: absolute;
+		width:250px;
+		height: 200px;
+		border-radius: 10%;
+		transform: translate( -0%, -20% );
+		pointer-events: none;
+		box-shadow: 0 0 10px rgba( 0, 0, 0,.1)
+		}
+		/* end css for image zoom */
+	
+		.header_area{
+			position: fixed;
+			top: 0;
+			z-index: 999;
+			width:100%;
+		}
+    .avatar {
+    vertical-align: middle;
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+  }
+  #majestic{
+	margin-top: 1px;
+	color: black;
+	margin-left: 10px;
+  }
+  #name{
+	margin-top: 5px;
+	margin-left:17px;
+	font-weight: bold;
+  }
+ 
+	</style>
+</head>
+<body>
+<header>
+	<nav class="navbar navbar-expand-lg fixed-top navbar-light bg-light" style="height:85px;">
+		<a class="nav-link" href="{% url 'index' %}"><h1 style="font-family:'Times New Roman', Times, serif" id="majestic">Majestic</h1></a>						
+		<button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarTogglerDemo02" aria-controls="navbarTogglerDemo02" aria-expanded="false" aria-label="Toggle navigation">
+		  <span class="navbar-toggler-icon"></span>
+		</button>
+	  
+		<div class="collapse navbar-collapse" id="navbarTogglerDemo02">
+		  <ul class="navbar-nav mr-auto mt-2 mt-lg-0">
+				<li class="nav-item active">
+					<a class="nav-link" href="{% url 'shop_page' %}">SHOP</a>
+				</li>
+		  </ul>
+		  <ul class="navbar-nav mr-auto mt-0 mt-lg-0" style="padding-left: 450px;">
+			{% if user.is_authenticated and request.session %}
+			<li class="mt-0 my-3">
+				<h5  id="name">Hi&nbsp;{{ request.user.first_name }}</h5>
+			</li>
+			{% endif %}
+			{% if cart %}
+			{% if request.session.item_count %}				
+				<li class="nav-item active mx-3">
+					<a href="{% url 'cartview' %}">
+						<img src="{% static '/img/shopping-cart.png' %}" alt="Cart" width="25px" height="25px">
+						<span id="item_count" class="badge">{{ request.session.item_count }}</span>
+					</a>				
+				</li>
+			{% else %}
+				<li class="mx-3">
+					<a href="{% url 'cartview' %}">
+						<img src="{% static '/img/shopping-cart.png' %}" alt="Cart" width="40px" height="40px">
+					</a>
+				</li>
+
+			{% endif %}
+			{% endif %}
+			{% if euser %}
+			<li>
+				<div class="dropdown">
+					<button class="dropdown-toggle" type="button" style="border-style: none;" id="userProfileDropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+					  <img src="{% static 'img/avatar-img.jpg' %}" style="border-radius: 50% !important;"  alt="Avatar" width="50" height="50">
+
+					</button>
+					<div class="dropdown-menu" aria-labelledby="userProfileDropdown">
+					  <h6 class="dropdown-header"><a href="{% url 'user_profile'  %}">User Profile</a></h6>
+					  <a class="dropdown-item" href="{% url 'customer_logout' %}">Logout</a>
+					</div>
+				  </div>
+			</li>
+		{% else %}
+			<li class="nav-item"><a class="nav-link" href="{% url 'customer_signin' %}">Sign in</a></li>
+			<li class="nav-item"><a class="nav-link" href="{% url 'customer_signUp' %}">Sign Up</a></li>
+			{% endif %}
+
+		  </ul>
+		
+		</div>
+	  </nav>
+</header>
+
+
+
+
+<!-- <div style="height: -5px;"></div> -->
+<div class="container">
+<!-- start banner Area -->
+<section>
+	{% if banners %}
+    <div id="myCarousel" class="carousel slide" data-ride="carousel">
+        <!-- Indicators -->
+        <ol class="carousel-indicators">
+            {% for banner in banners %}
+            <li data-target="#myCarousel" data-slide-to="{{ forloop.counter0 }}" {% if forloop.first %}class="active"{% endif %}></li>
+            {% endfor %}
+        </ol>
+        <div class="carousel-inner">
+
+            {% for banner in banners %}
+    		<div class="item {% if forloop.first %}active{% endif %}">
+				<div class="row">
+				<div class="col-6">
+					<img src="{{ banner.image.url }}" alt="{{ banner.alt_text }}" width="100%" height="100%">
+				</div>
+				<div class="col-6" style="text-align: center;padding-top:350px;"> 	
+					<div style="color: maroon;" >
+						<h3><strong>{{ banner.title }}</strong></h3>
+						{% for category in categories %}
+						{% if category.offer %}
+						   <h3>
+							<strong>
+								{{ category.offer.discount_percentage }}&nbsp;%&nbsp;OFF On&nbsp; {{ category.category_name }}
+							</strong>
+						</h3>
+						{% endif %}
+						{% endfor %}
+					</div>
+				</div>
+				</div>
+    		</div>
+			{% endfor %}
+        </div>
+	
+        <!-- Left and right controls -->
+        <a class="left carousel-control" href="#myCarousel" data-slide="prev">
+            <span class="glyphicon glyphicon-chevron-left"></span>
+            <span class="sr-only">Previous</span>
+        </a>
+        <a class="right carousel-control" href="#myCarousel" data-slide="next">
+            <span class="glyphicon glyphicon-chevron-right"></span>
+            <span class="sr-only">Next</span>
+        </a>
+    </div>
+	{% else %}
+	<div class="row">
+		<div class="col-6">
+			<img src="{% static 'img/banner.jpg' %}" alt="{{ banner.alt_text }}" width="100%" height="100%">
+		</div>
+		<div class="col-6" style="text-align: center;padding-top:350px;color: maroon;">
+			{% for category in categories %}
+			{% if category.offer %}
+			<h3>
+			<strong>
+				{{ category.offer.discount_percentage }}&nbsp;%&nbsp;OFF On&nbsp; {{ category.category_name }}
+			</strong>
+		</h3>
+		{% endif %}
+		{% endfor %}
+		</div>
+	</div>
+	{% endif %}
+</section>
+  
+	<!-- End banner Area -->
+
+	<!-- start features Area -->
+	<section class="features-area section_gap">
+		<div class="container">
+			<div class="row features-inner">
+				<!-- single features -->
+				<div class="col-lg-3 col-md-6 col-sm-6">
+					<div class="single-features">
+						<div class="f-icon">
+							<img src="{% static 'img/features/f-icon1.png' %}" alt="">
+						</div>
+						<h6>Free Delivery</h6>
+						<p>Free Shipping on all order</p>
+					</div>
+				</div>
+				<!-- single features -->
+				<div class="col-lg-3 col-md-6 col-sm-6">
+					<div class="single-features">
+						<div class="f-icon">
+							<img src="{% static 'img/features/f-icon2.png' %}" alt="">
+						</div>
+						<h6>Return Policy</h6>
+						<p>Free Shipping on all order</p>
+					</div>
+				</div>
+				<!-- single features -->
+				<div class="col-lg-3 col-md-6 col-sm-6">
+					<div class="single-features">
+						<div class="f-icon">
+							<img src="{% static 'img/features/f-icon3.png' %}" alt="">
+						</div>
+						<h6>24/7 Support</h6>
+						<p>Free Shipping on all order</p>
+					</div>
+				</div>
+				<!-- single features -->
+				<div class="col-lg-3 col-md-6 col-sm-6">
+					<div class="single-features">
+						<div class="f-icon">
+							<img src="{% static 'img/features/f-icon4.png' %}" alt="">
+						</div>
+						<h6>Secure Payment</h6>
+						<p>Free Shipping on all order</p>
+					</div>
+				</div>
+			</div>
+		</div>
+	</section>
+	<!-- start product Area -->
+	<section>
+		<!-- single product slide -->
+		{% for product in products %}
+		<!-- single product -->
+		<div class="col-lg-3 col-md-4">
+			<div class="single-product">
+					<a href="{% url 'singleProduct' product.id %}">
+						<img class="img-fluid" src="{{ product.productImages.first.image.url }}" alt="">
+					</a>
+						
+				<div class="product-details">
+					<h6>{{ product.product_name}}</h6>
+					<div class="price">
+						<h6>Rs {{ product.variants.first.price }}</h6>
+						<strong>
+							{% if product.offer  %}
+								{{ product.offer.discount_percentage }}%OFF
+							{% endif %}
+						</strong>
+					</div>
+					<div class="prd-bottom">
+						<a href="{% url 'singleProduct' product.id %}" class="social-info">
+							<span class="lnr lnr-move"></span>
+							<p class="hover-text">view more</p>
+						</a>
+					</div>
+				</div>
+			</div>
+		</div>
+	{% empty %}
+		<!-- display no-product image if there are no products -->
+		<div class="col-lg-12 text-center">
+			<img class="img-fluid" src="{% static '/img/no-product.png' %}" alt="">
+		</div>
+	{% endfor %}
+	
+</section>
+
+</div>
+	<!-- End related-product Area -->
+	<script>
+		const toggleDetailsBtn = document.getElementById('toggleDetailsBtn');
+		const userDetails = document.getElementById('userDetails');
+	  
+		toggleDetailsBtn.addEventListener('click', function() {
+		  if (userDetails.style.display === 'none') {
+			userDetails.style.display = 'block';
+			toggleDetailsBtn.textContent = 'Hide Details';
+		  } else {
+			userDetails.style.display = 'none';
+			toggleDetailsBtn.textContent = 'Show Details';
+		  }
+		});
+		// Get the anchor tag element
+		
+  const carousel = document.querySelector('.carousel');
+  const images = carousel.querySelectorAll('img');
+  const caption = document.querySelector('.caption');
+
+  let currentIndex = 0;
+  let intervalId;
+
+  function showImage(index) {
+    if (index < 0) {
+      index = images.length - 1;
+    } else if (index >= images.length) {
+      index = 0;
+    }
+
+    carousel.style.transform = `translateX(-${index * 100}%)`;
+    currentIndex = index;
+
+    caption.querySelector('h1').textContent = images[currentIndex].getAttribute('alt');
+  }
+
+  function startCarousel() {
+    intervalId = setInterval(() => {
+      showImage(currentIndex + 1);
+    }, 5000);
+  }
+
+  function stopCarousel() {
+    clearInterval(intervalId);
+  }
+
+  showImage(currentIndex);
+  startCarousel();
+
+  carousel.addEventListener('mouseenter', stopCarousel);
+  carousel.addEventListener('mouseleave', startCarousel);
+</script>
+
+	{% include 'base/footer.html' %}
