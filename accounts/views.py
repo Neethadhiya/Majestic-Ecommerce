@@ -50,15 +50,11 @@ def adminLogin(request):
             messages.error(request,"Invalid password")
             return redirect('/')
     else:
-<<<<<<< HEAD
         if not request.user.is_authenticated:
             return render(request,'admin/adminLogin.html')
         else:
             return redirect('adminHome/')
 
-=======
-        return render(request,'admin/adminLogin.html')
->>>>>>> 332893c805ca3e003c2b8339de91435e6755475d
 
 @login_required(login_url='adminLogin') 
 @permission_required('is_superuser')
@@ -94,10 +90,6 @@ def adminHome(request):
         'years': years,
         'months': months,
     }
-<<<<<<< HEAD
-=======
-
->>>>>>> 332893c805ca3e003c2b8339de91435e6755475d
     return render(request, 'admin/adminHome.html', context)
 
 

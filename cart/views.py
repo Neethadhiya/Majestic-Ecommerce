@@ -699,7 +699,6 @@ def wallet(request):
 
     return render(request,'store/invoice.html',context) 
 
-<<<<<<< HEAD
 from django.db.models import Min, Max
 
 def filter_products(request):
@@ -772,91 +771,3 @@ def search_products(request):
 
 
 
-=======
-# from django.db.models import Min, Max
-# def filter_product(request):
-#     if request.method == 'POST':
-#         data = json.loads(request.body)
-#         category_id = data.get('category')
-#         variant = data.get('variant')
-#         min_price = data.get('min_price')
-#         max_price = data.get('max_price')
-
-#         categories = Category.objects.filter(is_blocked=True)
-#         variants = Variant.objects.values_list('variant_name', flat=True).distinct()
-#         products = Product.objects.filter(is_deleted=False).order_by('product_name').prefetch_related('variants')
-
-#     try:
-#         category_id    =     Category.objects.get(id=category_id)
-#     except:
-#         category_id = None
-#     if category_id:
-#         products   =   products.filter(category__category_name__iexact=category_id.category_name)
-#     for product in products:
-#         # Get the variant for the current product
-#         product_variant = product.variants.filter(variant_name__in=variants).first()
-
- 
-#     if min_price:
-#         try:
-#             min_price    =    float(min_price)
-#             products     =    products.filter(variants__price__gte=min_price)
-#             for product in products:
-#     # Loop through each variant for the current product
-#                 for variant in product.variants.all():
-#                     print(variant.price, '---variant.price')           
-#         except ValueError:
-#             pass
-#     else:
-#         min_price = 0
-    
-#     if max_price:
-#         try:
-#             max_price   =   float(max_price)
-#             products    =   products.filter(variants__price__lte=max_price)
-#             for product in products:
-#     # Loop through each variant for the current product
-#                 for variant in product.variants.all():
-#                     print(variant.price, '---variant.price')               
-#         except ValueError:
-#             max_price  =  0
-
-#     products = products.annotate(min_price=Min('variants__price'), max_price=Max('variants__price'))
-
-#     if products.count() == 0:
-#         messages.error(request,"")
-#         no_product = True 
-#     else:
-#         no_product = False 
-#     context = {
-#         'categories'  :    categories,
-#         'variants'    :    variants,
-#         'min_price'   :    min_price,
-#         'max_price'   :    max_price,
-#         'products'    :    products,
-#         'filter'      :    True,
-#         'category_id' :    category_id,
-#         'euser'       :     True,
-#         'no_product'  :    no_product,
-
-#     }
-#     return render(request, 'store/shop.html', context)
-# from django.template.loader import render_to_string
-
-# def search_suggestions(request):
-#     query = request.GET.get('q', '')
-#     if query:
-#         products = Product.objects.filter(Q(product_name__icontains=query))
-#         suggestions = [product.product_name for product in products]
-#         return JsonResponse({'suggestions': suggestions})
-#     else:
-#         return JsonResponse({})
-def search_products(request):
-    if request.method == 'POST':
-        data = json.loads(request.body)
-        query = data.get('query')
-        print('search_term',query)
-        products = Product.objects.filter(product_name__istartswith=query)
-        product_list = [p.product_name for p in products]
-        return JsonResponse({'products': product_list})
->>>>>>> 332893c805ca3e003c2b8339de91435e6755475d

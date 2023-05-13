@@ -15,12 +15,8 @@ urlpatterns=[
     path('display_couponlist/block_coupon/',  views.block_coupon,name='block_coupon'),
     path('add_category_offers/',views.add_category_offers,name='add_category_offers'),
     path('add_product_offers/',views.add_product_offers,name='add_product_offers'),
-<<<<<<< HEAD
     path('add_product_offers/get_products/', views.get_products, name='get_products'),    
     path('admin_orders/',views.admin_orders,name='admin_orders'),
-=======
-    path('add_product_offers/get_products/', views.get_products, name='get_products'),    path('admin_orders/',views.admin_orders,name='admin_orders'),
->>>>>>> 332893c805ca3e003c2b8339de91435e6755475d
     path('display_offers/',views.display_offers,name='display_offers'),
     path('display_offers/block_category_offer/',views.block_category_offer,name='block_category_offer'),
     path('admin_order_status/<int:id>', views.admin_order_status,name='admin_order_status'),
