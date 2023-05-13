@@ -762,7 +762,8 @@ def search_products(request):
     
     if query:
         products = products.filter(Q(product_name__icontains=query) | Q(category__category_name__icontains=query) | Q(variants__variant_name__icontains=query)).distinct()
-
+    if not products:
+        no_product = True
     context = {
         'categories': categories,
         'sizevar': sizevar,
@@ -771,6 +772,7 @@ def search_products(request):
         'filter': True,
         'query': query,
         'euser'   :   True,
+        'no_product' :  no_product,
     }
 
     return render(request, 'store/shop.html', context)
