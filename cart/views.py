@@ -743,6 +743,7 @@ def filter_products(request):
         'max_price': request.POST.get('max'),
         'filter': True,
         'variants': variants,
+        'euser'             :   True,
     }
 
     return render(request, 'store/shop.html', context)
@@ -765,6 +766,7 @@ def search_products(request):
         'variants':variants,
         'filter': True,
         'query': query,
+        'euser'   :   True,
     }
 
     return render(request, 'store/shop.html', context)
