@@ -734,6 +734,8 @@ def filter_products(request):
         products = Product.objects.filter(is_deleted=False).order_by('product_name')
     if not products:
         no_product = True
+    else:
+        no_product = False
        
     context = {
         'categories': categories,
@@ -764,6 +766,9 @@ def search_products(request):
         products = products.filter(Q(product_name__icontains=query) | Q(category__category_name__icontains=query) | Q(variants__variant_name__icontains=query)).distinct()
     if not products:
         no_product = True
+    else:
+        no_product = False
+        
     context = {
         'categories': categories,
         'sizevar': sizevar,
