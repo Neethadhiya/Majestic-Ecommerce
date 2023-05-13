@@ -282,8 +282,10 @@
 	<!-- start product Area -->
 	<section>
 		<!-- single product slide -->
+		<div class="row">
 		{% for product in products %}
 		<!-- single product -->
+		
 		<div class="col-lg-3 col-md-4">
 			<div class="single-product">
 					<a href="{% url 'singleProduct' product.id %}">
@@ -309,6 +311,7 @@
 				</div>
 			</div>
 		</div>
+	</div>
 	{% empty %}
 		<!-- display no-product image if there are no products -->
 		<div class="col-lg-12 text-center">
