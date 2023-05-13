@@ -709,7 +709,6 @@ def filter_products(request):
     
     if request.method == 'POST':
         category_id = request.POST.get('category')
-        print(category_id)
         size = request.POST.get('variant')
         min_price = request.POST.get('min')
         max_price = request.POST.get('max')
