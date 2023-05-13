@@ -1,202 +1,187 @@
 {% extends 'base/base.html' %}
-{% block content %}
 {% load static %}
-<div style="height: 50px;"></div>
+{% block content %}
+<style>
+	#search-query {
+  border: none;
+  border-radius: 4px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  padding: 8px;
+  width: 200px;
+}
+
+#search-button {
+  background-color: rgb(76,211,227);
+  border: none;
+  border-radius: 2px;
+  color: #fff;
+  cursor: pointer;
+  font-size: 16px;
+  padding: 8px 16px;
+}
+
+#search-button:hover {
+  background-color: rgb(76,211,227);
+}
+
+</style>
+<div style="padding-top: 95px;"></div>
+
 <div class="container">
-<!-- start banner Area -->
-<section class="banner-area">
-	<div class="container">
-		<div class="row fullscreen align-items-center justify-content-start">
-			<div class="col-lg-12">
-				<div class="active-banner-slider owl-carousel">
-					{% for banner in banners %}
-					<!-- single-slide -->
-						<div class="row single-slide align-items-center d-flex">
-							<div class="col-lg-5 col-md-6">
-								<div class="banner-content">
-									<div class="mb-5" >
-									<h2 style="color: brown;">{{ banner.title }}</h2>
-								</div>
-									<h2>
-										{% for category in categories %}
-											{% if category.offer %}
-											<div class="mb-5" style="color: coral;">
-												{{ category.offer.discount_percentage }}&nbsp;%&nbsp;&nbsp;&nbsp;OFF on {{ category.category_name }}<br>
-											</div>
-											{% endif %}
-										{% endfor %}
-									</h2>
-								</div>
-						
-							</div>
-							<div class="col-lg-7">
-								<div class="banner-img">
-									<img class="img-fluid" src="{{ banner.image.url }}" alt="" style="height: 657px;width:394px;">
-								</div>
-							</div>
-						</div>
-					{% endfor %}
-				</div>
+	<div class="row">
+		<div class="col-xl-3 col-lg-4 col-md-5">
+			<div class="sidebar-filter mt-50">
+				<div><strong>Product Filters</strong></div>
+				<div class="form-group">
+					<br><strong><label for="my-dropdown" >Category</label></strong><br><br>
+						<select name="category" class="form-control">
+							{% for category in categories %}
+							<option value="{{ category.id }}" id="{{ category.id }}" >{{ category.category_name }}</option>
+							{% endfor %}
+						</select>
+				</div><br>
+		
+				<div>
+					<br><strong><label>Size</label></strong><br>
+					<select  name="variant" class="form-control">
+						{% for variant in variants %}
+						<option  id="{{ variant.id }}">{{ variant }}</option>
+						{% endfor %}
+					</select>
+					<br><br>
+					<br><strong><label >Min Price</label></strong><br>
+					<input type="number" name="min" id="min" min="1" class="form-control form-control-lg" value="{{ min_price }}" />
+
+					<br><strong><label>Max Price</label></strong><br>
+					<input type="number" name="max" id="max" min="1" class="form-control form-control-lg" value="{{ max_price }}"/>
+
+				</div><br><br>
+				<button onclick="filterProduct()" class="btn btn-block genric-btn success radius" id="filter" style="border-style: none;" type="button">Filter</button>
 			</div>
 		</div>
-	</div>
-</section>
+		<div style="height:20px;"></div>
 
-		  
-	<!-- End banner Area -->
-
-	<!-- start features Area -->
-	<section class="features-area section_gap">
-		<div class="container">
-			<div class="row features-inner">
-				<!-- single features -->
-				<div class="col-lg-3 col-md-6 col-sm-6">
-					<div class="single-features">
-						<div class="f-icon">
-							<img src="{% static 'img/features/f-icon1.png' %}" alt="">
-						</div>
-						<h6>Free Delivery</h6>
-						<p>Free Shipping on all order</p>
-					</div>
-				</div>
-				<!-- single features -->
-				<div class="col-lg-3 col-md-6 col-sm-6">
-					<div class="single-features">
-						<div class="f-icon">
-							<img src="{% static 'img/features/f-icon2.png' %}" alt="">
-						</div>
-						<h6>Return Policy</h6>
-						<p>Free Shipping on all order</p>
-					</div>
-				</div>
-				<!-- single features -->
-				<div class="col-lg-3 col-md-6 col-sm-6">
-					<div class="single-features">
-						<div class="f-icon">
-							<img src="{% static 'img/features/f-icon3.png' %}" alt="">
-						</div>
-						<h6>24/7 Support</h6>
-						<p>Free Shipping on all order</p>
-					</div>
-				</div>
-				<!-- single features -->
-				<div class="col-lg-3 col-md-6 col-sm-6">
-					<div class="single-features">
-						<div class="f-icon">
-							<img src="{% static 'img/features/f-icon4.png' %}" alt="">
-						</div>
-						<h6>Secure Payment</h6>
-						<p>Free Shipping on all order</p>
-					</div>
-				</div>
-			</div>
-		</div>
-	</section>
-	<!-- end features Area -->
-
-
-	<!-- start product Area -->
-	<section>
-		<!-- single product slide -->
-		<div >
-			<div class="container">
-				<div class="row justify-content-center">
-					<div class="col-lg-6 text-center">
-						<div class="section-title">
-							<h1>Our Products</h1>
-							<p>Shop traditional Indian ethnic wear online for women at MAJESTIC Fashion at best price. View our latest collections of wedding dresses....</p>
-						</div>
-					</div>
-				</div>
+		<div class="col-xl-9 col-lg-8 col-md-7">
+			<section class="lattest-product-area pb-40 category-list">
+				<input type="text" id="search-query" placeholder="Search products">
+				<button id="search-button" onclick="searchProducts()">Search</button>
+				<div id="suggestion-box"></div>
 				<div class="row">
-					{% for product in products %}
+					{% if messages %}
+					<ul class="messages" style="text-align: center;">
+					  {% for message in messages %}
+					  <h2>
+						<li {% if message.tags %}class="{{ message.tags }} text-danger"{% endif %}>{{ message }}</li>
+					  </h2>
+					{% endfor %}
+					</ul>
+					{% endif %}
 					<!-- single product -->
-					<div class="col-lg-3 col-md-4">
+					{% if no_product %}
+					<div style="margin-left: 300px;">
+						<img src="{% static '/img/no-products.png' %}" alt="Cart" width="450px" height="450px" >
+					</div>
+					{% endif %}
+					{% for product in products %}
+					<div class="col-lg-4 col-md-6">
+						
 						<div class="single-product">
 							<a href="{% url 'singleProduct' product.id %}">
-								<img src="{{ product.productImages.first.image.url }}"
-									alt="{{ product.product_name }}">
-							</a>						
+							<img class="img-fluid" src="{{ product.productImages.first.image.url }}"
+								alt="">
+							</a>
 							<div class="product-details">
-								<h6>{{ product.product_name}}</h6>
+								<h6>{{product.product_name}}</h6>
 								<div class="price">
-									<h6>Rs {{ product.variants.first.price }}</h6>
-									<strong >
-										{% if product.offer  %}
-											{{ product.offer.discount_percentage }}%OFF
-										{% endif %}
-									</strong>
+									<h6>Rs: {{ product.variants.first.price }}</h6>
+									
 								</div>
+								<strong>
+									{% if product.offer  %}
+										{{ product.offer.discount_percentage }}%OFF
+									{% endif %}
+								</strong>
 								<div class="prd-bottom">
 									<a href="{% url 'singleProduct' product.id %}" class="social-info">
 										<span class="lnr lnr-move"></span>
 										<p class="hover-text">view more</p>
-										
 									</a>
 								</div>
+								
 							</div>
 						</div>
-				
+						
 					</div>
 					{% endfor %}
+				</section>
+			</div>
+		</div>
+	</div>
+<script>
+function filterProduct() {
+  // Get the form field values
+  const categorySelect = document.querySelector('select[name="category"]');
+  const categoryId = categorySelect.value;
 
-				</div>
-			</div>	
-		</div>		
-</section>
+  const variantSelect = document.querySelector('select[name="variant"]');
+  const variantValue = variantSelect.value;
 
-</div>
-	<!-- End related-product Area -->
-	<script>
-		const toggleDetailsBtn = document.getElementById('toggleDetailsBtn');
-		const userDetails = document.getElementById('userDetails');
-	  
-		toggleDetailsBtn.addEventListener('click', function() {
-		  if (userDetails.style.display === 'none') {
-			userDetails.style.display = 'block';
-			toggleDetailsBtn.textContent = 'Hide Details';
-		  } else {
-			userDetails.style.display = 'none';
-			toggleDetailsBtn.textContent = 'Show Details';
-		  }
-		});
-		// Get the anchor tag element
-		
-  const carousel = document.querySelector('.carousel');
-  const images = carousel.querySelectorAll('img');
-  const caption = document.querySelector('.caption');
+  const minPriceInput = document.getElementById('min');
+  const maxPriceInput = document.getElementById('max');
+  const minPrice = minPriceInput.value;
+  const maxPrice = maxPriceInput.value;
 
-  let currentIndex = 0;
-  let intervalId;
+  // Construct the request payload
+  const payload = JSON.stringify({
+    category: categoryId,
+    variant: variantValue,
+    min_price: minPrice,
+    max_price: maxPrice
+  });
 
-  function showImage(index) {
-    if (index < 0) {
-      index = images.length - 1;
-    } else if (index >= images.length) {
-      index = 0;
+  // Send the POST request to the server-side endpoint
+  fetch("filter_product/", {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      "X-CSRFToken": "{{ csrf_token }}"
+    },
+    body: payload
+  })
+  .then(response => {
+    if (response.ok) {
+      // handle successful response
+      window.location.href = "";
+    } else {
+      throw new Error('Network response was not ok');
     }
-
-    carousel.style.transform = `translateX(-${index * 100}%)`;
-    currentIndex = index;
-
-    caption.querySelector('h1').textContent = images[currentIndex].getAttribute('alt');
-  }
-
-  function startCarousel() {
-    intervalId = setInterval(() => {
-      showImage(currentIndex + 1);
-    }, 5000);
-  }
-
-  function stopCarousel() {
-    clearInterval(intervalId);
-  }
-
-  showImage(currentIndex);
-  startCarousel();
-
-  carousel.addEventListener('mouseenter', stopCarousel);
-  carousel.addEventListener('mouseleave', startCarousel);
+  })
+  .catch(error => {
+    console.error('There was a problem with the fetch request:', error);
+  });
+}
+function searchProducts() {
+    var query = document.getElementById('search-query').value;
+    if (query) {
+        var xhr = new XMLHttpRequest();
+        xhr.open('GET', '/search_suggestions/?q=' + encodeURIComponent(query));
+        xhr.onload = function() {
+            if (xhr.status === 200) {
+                var response = JSON.parse(xhr.responseText);
+                var suggestions = response['suggestions'];
+                var suggestionBox = document.getElementById('suggestion-box');
+                suggestionBox.innerHTML = '';
+                for (var i = 0; i < suggestions.length; i++) {
+                    var suggestion = suggestions[i];
+                    var suggestionItem = document.createElement('div');
+                    suggestionItem.textContent = suggestion;
+                    suggestionBox.appendChild(suggestionItem);
+                }
+            }
+        };
+        xhr.send();
+    }
+}
 </script>
 
 	{% endblock %}

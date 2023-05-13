@@ -54,14 +54,7 @@
             {{ variant.stock }}<br>
           {% endfor %}
         </td>
-          <!-- <td>
-          {% for image in product.productImages.all %}
-            <button id="delete-button">
-              <a href="delete_single_image/{{ image.id }}"><img src="{{ image.image.url }}" alt="{{ product.product_name }}" width="50">Delete </a>
-            </button>
-              {% endfor %}
-          </a>
-        </td> -->
+       
         <td>
           {% for image in product.productImages.all %}
           <div class="my-2">

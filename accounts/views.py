@@ -35,8 +35,6 @@ from openpyxl.styles import PatternFill, Font, Alignment
 
 
 def adminLogin(request):
-    # session_data = dict(request.session.items())
-    # print(session_data,"session_dataaaaaaaaaaaaaa")
     if request.method=='POST':
         email           =   request.POST['email']
         password        =   request.POST["password"]
@@ -52,7 +50,11 @@ def adminLogin(request):
             messages.error(request,"Invalid password")
             return redirect('/')
     else:
-        return render(request,'admin/adminLogin.html')
+        if not request.user.is_authenticated:
+            return render(request,'admin/adminLogin.html')
+        else:
+            return redirect('adminHome/')
+
 
 @login_required(login_url='adminLogin') 
 @permission_required('is_superuser')
@@ -88,7 +90,6 @@ def adminHome(request):
         'years': years,
         'months': months,
     }
-
     return render(request, 'admin/adminHome.html', context)
 
 
@@ -422,11 +423,13 @@ def monthly_report(request,date):
     todt = [2023,frmdate,28]
     month_name = datetime.datetime.strptime(str(frmdate), "%m").strftime("%B")
     orders = Orders.objects.filter(date_added__gte = datetime.date(fm[0],fm[1],fm[2]),date_added__lte=datetime.date(todt[0],todt[1],todt[2]),is_ordered =True)
+    total = sum([order.total for order in orders])
     if len(orders)>0:
         context = {
-            'frmdate': frmdate,
-            'orders'  : orders,
-            'month_name':month_name,
+            'frmdate'   : frmdate,
+            'orders'    : orders,
+            'month_name': month_name,
+            'total'     : total,
         }
         return render(request,'admin/monthly_sales_report.html',context)
 
@@ -442,10 +445,12 @@ def yearly_report(request,date):
     fm              =    [frmdate, 1, 1]
     todt            =    [frmdate,12,31]
     orders   =    Orders.objects.filter(date_added__gte = datetime.date(fm[0],fm[1],fm[2]),date_added__lte=datetime.date(todt[0],todt[1],todt[2]),is_ordered =True)
+    total = sum([order.total for order in orders])
     if len(orders)>0:
         context     =    {
                                 'orders'  :  orders,
                                 'year'           :  frmdate,
+                                'total'     : total,
                          }
         return render(request,'admin/yearly_sales_report.html',context)
     else:
@@ -465,11 +470,13 @@ def date_range(request):
             fm = [int(x) for x in date_from]
             todt = [int(x) for x in date_to]
             orders = Orders.objects.filter(date_added__gte=datetime.date(fm[0], fm[1], fm[2]), date_added__lte=datetime.date(todt[0], todt[1], todt[2]), is_ordered=True)
+            total = sum([order.total for order in orders])
             if orders:
                 context = {
                     'orders': orders,
                     'from_date': from_date,
                     'to_date': to_date,
+                    'total'     : total,
                 }
                 return render(request, 'admin/date_range_report.html', context)
             else:
@@ -486,11 +493,13 @@ def monthly_sales_pdf_download(request, frmdate):
     fm = [2023, int(frmdate), 1]
     todt = [2023, int(frmdate), 28]
     orders = Orders.objects.filter(date_added__gte=datetime.date(fm[0], fm[1], fm[2]), date_added__lte=datetime.date(todt[0], todt[1], todt[2]), is_ordered=True)
+    total = sum([order.total for order in orders])
     if len(orders) > 0:
         template = get_template('admin/pdf_monthly_sales_report.html')
         context = {
             'frmdate': frmdate,
             'orders': orders,
+            'total'     : total,
         }
         html = template.render(context)
 
@@ -520,11 +529,13 @@ def yearly_sales_pdf_download(request,year):
     fm              =    [frmdate, 1, 1]
     todt            =    [frmdate,12,31]
     orders   =    Orders.objects.filter(date_added__gte = datetime.date(fm[0],fm[1],fm[2]),date_added__lte=datetime.date(todt[0],todt[1],todt[2]),is_ordered =True)
+    total = sum([order.total for order in orders])
     if len(orders)>0:
         template = get_template('admin/pdf_yearly_sales_report.html')
         context     =    {
                                 'orders'         :  orders,
                                 'year'           :  frmdate,
+                                'total'     : total,
                          }
         html = template.render(context)
         def render_to_pdf(html_string):
@@ -554,13 +565,14 @@ def date_range_sales_pdf_download(request,from_date,to_date):
 
     orders = Orders.objects.filter(date_added__gte=datetime.date(fm[0], fm[1], fm[2]),
                                    date_added__lte=datetime.date(todt[0], todt[1], todt[2]), is_ordered=True)
-
+    total = sum([order.total for order in orders])
     if len(orders) > 0:
         template = get_template('admin/pdf_date_range_report.html')
         context = {
             'orders': orders,
             'from_date': from_date,
-            'to_date': to_date
+            'to_date': to_date,
+            'total'     : total,
         }
         html = template.render(context)
 
@@ -589,6 +601,7 @@ def monthly_sales_excel_download(request, frmdate):
     fm = [2023, int(frmdate), 1]
     todt = [2023, int(frmdate), 28]
     orders = Orders.objects.filter(date_added__gte=datetime.date(fm[0], fm[1], fm[2]), date_added__lte=datetime.date(todt[0], todt[1], todt[2]), is_ordered=True)
+    total = sum([order.total for order in orders])
     if len(orders) > 0:
         # Create a new workbook and set the active worksheet
         workbook = openpyxl.Workbook()
@@ -623,7 +636,7 @@ def monthly_sales_excel_download(request, frmdate):
             address_lines = [order.address.housename, order.address.locality, f"{order.address.city}, {order.address.state} {order.address.pincode}"]
             worksheet.cell(row=row_index, column=5).value =  "\n".join(address_lines)
     # Set cell alignment to center
-            for col in range(1, 10):
+            for col in range(1, 9):
                 cell = worksheet.cell(row=row_index, column=col)
                 cell.alignment = openpyxl.styles.Alignment(horizontal='center', vertical='center')
     # Set row height for address cells
@@ -637,6 +650,11 @@ def monthly_sales_excel_download(request, frmdate):
             worksheet.cell(row=row_index, column=7).value = order.payment.status 
             worksheet.cell(row=row_index, column=8).value = order.status
             worksheet.cell(row=row_index, column=9).value = order.total 
+            last_row = worksheet.max_row
+            worksheet.cell(row=last_row+1, column=8).value = "Total"
+            worksheet.cell(row=last_row+1, column=9).value = total
+            worksheet.cell(row=last_row+1, column=9).alignment=openpyxl.styles.Alignment(horizontal='center', vertical='center')
+            worksheet.cell(row=last_row+1, column=8).alignment=openpyxl.styles.Alignment(horizontal='center', vertical='center')
             for cell in worksheet[row_index]:
                 cell.alignment = alignment
         # Save workbook to BytesIO object
@@ -649,7 +667,6 @@ def monthly_sales_excel_download(request, frmdate):
         response['Content-Disposition'] = f'attachment; filename="monthly_sales_report_{frmdate}.xlsx"'
         
         return response
-        
     return HttpResponse("No data available for the selected month")
 
 @login_required(login_url='adminLogin') 
@@ -659,6 +676,7 @@ def yearly_sales_excel_download(request, year):
     fm              =    [year, 1, 1]
     todt            =    [year,12,31]
     orders   =    Orders.objects.filter(date_added__gte = datetime.date(fm[0],fm[1],fm[2]),date_added__lte=datetime.date(todt[0],todt[1],todt[2]),is_ordered =True)
+    total = sum([order.total for order in orders])
     if len(orders) > 0:
         # Create a new workbook and set the active worksheet
         workbook = openpyxl.Workbook()
@@ -693,7 +711,7 @@ def yearly_sales_excel_download(request, year):
             address_lines = [order.address.housename, order.address.locality, f"{order.address.city}, {order.address.state} {order.address.pincode}"]
             worksheet.cell(row=row_index, column=5).value =  "\n".join(address_lines)
     # Set cell alignment to center
-            for col in range(1, 10):
+            for col in range(1, 9):
                 cell = worksheet.cell(row=row_index, column=col)
                 cell.alignment = openpyxl.styles.Alignment(horizontal='center', vertical='center')
     # Set row height for address cells
@@ -707,6 +725,11 @@ def yearly_sales_excel_download(request, year):
             worksheet.cell(row=row_index, column=7).value = order.payment.status 
             worksheet.cell(row=row_index, column=8).value = order.status
             worksheet.cell(row=row_index, column=9).value = order.total 
+            last_row = worksheet.max_row
+            worksheet.cell(row=last_row+1, column=8).value = "Total"
+            worksheet.cell(row=last_row+1, column=9).value = total
+            worksheet.cell(row=last_row+1, column=9).alignment=openpyxl.styles.Alignment(horizontal='center', vertical='center')
+            worksheet.cell(row=last_row+1, column=8).alignment=openpyxl.styles.Alignment(horizontal='center', vertical='center')
             for cell in worksheet[row_index]:
                 cell.alignment = alignment
         # Save workbook to BytesIO object
@@ -732,6 +755,7 @@ def date_range_sales_excel_download(request, from_date,to_date):
 
     orders = Orders.objects.filter(date_added__gte=datetime.date(fm[0], fm[1], fm[2]),
                                    date_added__lte=datetime.date(todt[0], todt[1], todt[2]), is_ordered=True)
+    total = sum([order.total for order in orders])
     if len(orders) > 0:
         # Create a new workbook and set the active worksheet
         workbook = openpyxl.Workbook()
@@ -766,7 +790,7 @@ def date_range_sales_excel_download(request, from_date,to_date):
             address_lines = [order.address.housename, order.address.locality, f"{order.address.city}, {order.address.state} {order.address.pincode}"]
             worksheet.cell(row=row_index, column=5).value =  "\n".join(address_lines)
     # Set cell alignment to center
-            for col in range(1, 10):
+            for col in range(1, 9):
                 cell = worksheet.cell(row=row_index, column=col)
                 cell.alignment = openpyxl.styles.Alignment(horizontal='center', vertical='center')
     # Set row height for address cells
@@ -780,6 +804,12 @@ def date_range_sales_excel_download(request, from_date,to_date):
             worksheet.cell(row=row_index, column=7).value = order.payment.status 
             worksheet.cell(row=row_index, column=8).value = order.status
             worksheet.cell(row=row_index, column=9).value = order.total 
+            last_row = worksheet.max_row
+            worksheet.cell(row=last_row+1, column=8).value = "Total"
+            worksheet.cell(row=last_row+1, column=9).value = total
+            worksheet.cell(row=last_row+1, column=9).alignment=openpyxl.styles.Alignment(horizontal='center', vertical='center')
+            worksheet.cell(row=last_row+1, column=8).alignment=openpyxl.styles.Alignment(horizontal='center', vertical='center')
+          
             for cell in worksheet[row_index]:
                 cell.alignment = alignment
         # Save workbook to BytesIO object

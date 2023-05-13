@@ -297,9 +297,7 @@ function removeCoupon(){
         }
     })
     .then(data => {
-        console.log(data.coupon_code+"hii");
-        console.log(data.sub_total+"sub_total");
-        const grand1                 =    document.querySelector("#grand-amount-two");
+      const grand1                 =    document.querySelector("#grand-amount-two");
         grand1.style.display   =    "block";
         const grand                 =    document.querySelector("#sub-total-two");
         grand.innerText             =    data.sub_total;
@@ -307,15 +305,12 @@ function removeCoupon(){
         const discount              =    document.querySelector("#discount");
         const grandAmount           =    document.querySelector("#grand-amount_total");
         const grandAmount1           =    document.querySelector("#grand-amount");
-        console.log(grand);
         couponMsg.innerText         =    "Coupon  '"+data.coupon_code+"'  removed successfully";
         couponMsg.style.color       =    "red";
         subTotal.style.display      =    "none";
         discount.style.display      =    "none";
         grandAmount.style.display   =    "none";
         grandAmount1.style.display   =    "none";
-        // document.getElementById('grand-amount-two').style.display = 'block';
-        console.log(data.sub_total,'hhh');
     })
     .catch(error => {
         console.error('There was a problem with the fetch request:', error);

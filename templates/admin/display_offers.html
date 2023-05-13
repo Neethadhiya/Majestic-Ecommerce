@@ -58,8 +58,8 @@
       $('#myTable').DataTable();
   });
     function activeCategoryOffer(offerId) {
-      console.log(offerId);
-			fetch("block_category_offer/", {
+
+      fetch("block_category_offer/", {
 			method: "POST",
 			headers: {
 					"Content-Type": "application/json",

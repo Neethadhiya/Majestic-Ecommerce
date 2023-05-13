@@ -51,9 +51,6 @@ def index(request):
     categories       =   Category.objects.all()
     banners          =   Banner.objects.all()
     
-    for category in categories:
-        if category.offer:
-            print(category.offer.discount_percentage,"oooo")
     if request.method=='POST':
         product     =   request.POST['product']
     if request.user.is_authenticated :
@@ -114,11 +111,9 @@ def customer_signUp(request):
                     messages.error(request, "That username is taken. Try another", extra_tags='signupusername')
                     return redirect(customer_signUp)
                 if CustomUser.objects.filter(phone_number = phone_number).exists():
-                    print('GETTING INTO EMAIL')
                     messages.error(request,"That phone number is taken. Try another", extra_tags='signupphone_number')
                     return redirect(customer_signUp)
                 if CustomUser.objects.filter(email = email).exists():
-                    print('GETTING INTO EMAIL')
                     messages.error(request,"That email is taken. Try another", extra_tags='signupemail')
                     return redirect(customer_signUp)
                 else:
@@ -133,8 +128,6 @@ def customer_signUp(request):
                     request.session['user_id']  =   user.id
                     otp_code                    =   random.randint(100000,999999)
                     status                      =   send_otp_to_phone(user.phone_number, otp_code)
-                    # print("-------------------",otp_code)#for testing, delete it at the end ,uncomment status
-                    # status='Success'#for testing, delete it at the end ,uncomment status
                     if status == 'Success':
                         messages.success(request,"OTP sent successfully..")
                         request.session['otp_code'] = otp_code
@@ -172,8 +165,6 @@ def verify_otp(request):
     return render(request, 'customer/verify_otp.html')
 
 def customer_signin(request):
-    session_data = dict(request.session.items())
-    print(session_data,"session_dataaaaaaaaaaaaaa")
     categories      =   Category.objects.filter(is_blocked=True)
     context         =   {'categories':categories}
     if request.method=='POST':

@@ -14,7 +14,8 @@ urlpatterns=[
     path('place_order/payment_razorpay/',views.payment_razorpay , name='payment_razorpay'),  
     path('cartview/apply_coupon/',views.apply_coupon, name='apply_coupon'),
     path('cartview/remove_coupon/', views.remove_coupon, name='remove_coupon'),
-    path('cart/shop_page/filter_product/',views.filter_product, name='filter_product'),
+    path('shop_page/filter_products/', views.filter_products, name='filter_products'),
+    path('shop_page/search_products/', views.search_products, name='search_products'),
     path('shop_page/', views.shop_page, name='shop_page'),
     path('wallet/', views.wallet, name='wallet'),
-    ] 
+      ] 

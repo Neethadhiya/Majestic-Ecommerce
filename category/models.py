@@ -52,8 +52,9 @@ class Product(models.Model):
         return offer.first()
 
 class ProductImage(models.Model):
-    product         =   models.ForeignKey(Product,on_delete=models.CASCADE,related_name='productImages',null=True)
-    image           =   models.ImageField(upload_to="product",null=True,blank=True) 
+    product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name='productImages', null=True)
+    image = models.ImageField(upload_to="product", null=True, blank=True, default='/img/not-avaible.png')
+
 
 class Variant(models.Model):
     product         =   models.ForeignKey(Product,on_delete=models.CASCADE,related_name='variants', null=True,blank=True)

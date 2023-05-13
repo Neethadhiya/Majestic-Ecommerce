@@ -57,7 +57,6 @@
 
 document.querySelector('#category').addEventListener('change', function() {
     var categoryId = this.value;
-    console.log(categoryId, "lll");
     if (categoryId) {
         fetch(`get_products/?category_id=${categoryId}`, {
             method: 'GET',

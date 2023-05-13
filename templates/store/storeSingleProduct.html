@@ -77,25 +77,24 @@ function addToCart(productId) {
 			}
 			})
 			.then(data => {
-				if(data.stock=='false'){
-					Swal.fire({
+				if(data.stock!=='false'){
+					document.getElementById('item_count').value = data.item_count;
+                Swal.fire({
                     icon    :   'success',
-                    title   :   'Out of stock',
-                    text    :   'Please select another product... ',
+                    title   :   'Product added to cart',
+                    text    :   'You can view items on your cart... ',
   					confirmButtonText: 'OK',
                 }).then((result) => {
 					if (result.isConfirmed) {
 						window.location.href = "/cart/shop_page/";
 					}
-					});
+					});	
 				}
                else{
-				document.getElementById('item_count').value = data.item_count;
-				console.log(data.item_count);
-                Swal.fire({
+					Swal.fire({
                     icon    :   'success',
-                    title   :   'Product added to cart',
-                    text    :   'You can view items on your cart... ',
+                    title   :   'Out of stock',
+                    text    :   'Please select another product... ',
   					confirmButtonText: 'OK',
                 }).then((result) => {
 					if (result.isConfirmed) {

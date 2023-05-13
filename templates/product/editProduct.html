@@ -69,7 +69,7 @@
                 </div>
                 {% endif %}
                     <div style="padding-top:30px;">
-                      <button type="button" class="btn btn-primary  onclick="addInputGroup()">Add More</button>
+                      <button type="button" class="btn btn-primary"  onclick="addInputGroup()">Add More</button>
                     </div>
               </div>
             </div>
@@ -195,7 +195,6 @@ function validateVariants(select) {
           const myButton = newInputGroup.querySelector('button');
           myButton.addEventListener('click', function(event) {
             event.preventDefault();
-            console.log(this);
             this.parentNode.remove()
           });
           var inputs = newInputGroup.querySelectorAll("input");

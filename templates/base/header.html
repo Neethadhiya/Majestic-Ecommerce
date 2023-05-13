@@ -16,6 +16,7 @@
 	<meta charset="UTF-8">
 	<!-- Site Title -->
 	<title>Majestic</title>
+
 	<!--
 		============================================= -->
 	<link rel="stylesheet" href="{% static 'css/linearicons.css' %}">
@@ -82,6 +83,7 @@
   }
  
 	</style>
+		<link rel="shortcut icon" href="{% static 'img/fav.png' %}">
 </head>
 <body>
 <header>
@@ -97,7 +99,7 @@
 					<a class="nav-link" href="{% url 'shop_page' %}">SHOP</a>
 				</li>
 		  </ul>
-		  <ul class="navbar-nav mr-auto mt-0 mt-lg-0">
+		  <ul class="navbar-nav mr-auto mt-0 mt-lg-0" style="position:relative;right: 90px;">
 			{% if user.is_authenticated and request.session %}
 			<li class="mt-0 my-3">
 				<h5  style="margin-top: -5px;">Hi&nbsp;{{ request.user.first_name }}</h5>

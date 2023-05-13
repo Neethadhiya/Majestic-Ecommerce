@@ -18,13 +18,12 @@ def blockCategoryAjax(request):
     if request.method == 'POST':
         category_id = request.POST.get('category_id')
         category = Category.objects.get(id=category_id)
-        print("current is_blocked:", category.is_blocked)
+
         if category.is_blocked:
             category.is_blocked = False
         else:
             category.is_blocked = True
         category.save()
-        print("new is_blocked:", category.is_blocked)
         return JsonResponse({'is_blocked': category.is_blocked})
     else:
         return JsonResponse({'error': 'Invalid request method'})
@@ -81,7 +80,7 @@ def addProduct(request):
             unique_variants     =   []
             for variant in variants:
                 if variant in unique_variants:
-                    messages.error(request,"Warning: Multiple variants have the same value..")
+                    messages.error(request,"Warning: Add different size variants..")
                     return redirect('addProduct')
                 else:
                     unique_variants.append(variant)

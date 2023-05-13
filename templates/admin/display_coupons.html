@@ -62,8 +62,8 @@
       $('#myTable').DataTable();
   });
     function activeUser(couponId) {
-            console.log(couponId);
-			fetch("block_coupon/", {
+
+      fetch("block_coupon/", {
 			method: "POST",
 			headers: {
 					"Content-Type": "application/json",

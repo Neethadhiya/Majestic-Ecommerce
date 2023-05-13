@@ -174,7 +174,7 @@
         document.getElementById('sub').innerHTML =data.new_total;
         document.getElementById('sub-total'+data.id).innerHTML =data.sub_total;
         document.getElementById('item_count').innerHTML = data.item_count
-        console.log(data.item_count);
+
     })
     .catch(error => {
         console.error('There was a problem with the fetch request:', error);
@@ -182,8 +182,8 @@
 }  
 //delete cart
 function deleteCart(cartItemId){
-    console.log(cartItemId);
-        fetch("deletecart_item/", {
+
+    fetch("deletecart_item/", {
         method  :   'POST',
         headers :   {
                     'Content-Type': 'application/json',

@@ -27,13 +27,16 @@ import razorpay
 from django.conf import settings
 from django.views.decorators.csrf import csrf_exempt
 from django.http import HttpResponseBadRequest
+from django.db.models import Q
+from django.core import serializers
+
 
 # Create your views here.   
 def shop_page(request):
     products        =   Product.objects.filter(is_deleted=False)
     categories      =   Category.objects.filter(is_blocked=True)
     variants        =   Variant.objects.values_list('variant_name', flat=True).distinct()
-    if request.user.is_authenticated :
+    if request.user.is_authenticated:
         context={
                   'products'    :   products,
                   'euser'       :   True,
@@ -528,8 +531,6 @@ def cash_on_delivery(request):
             }
             return render(request,'store/nothing.html',context)
         else:
-            # session_data = dict(request.session.items())
-            # print(session_data)
             if 'coupon_code' in request.session:
                 cart_total     =    request.session.get('grand_total')
                 coupon         =    True
@@ -682,7 +683,6 @@ def wallet(request):
     order.is_ordered    =   True    
     order.save()
     order_product       =    OrderProduct.objects.filter(order=order)
-    print(order_product)
     context             = {
             'categories'        :   categories,
             'order_products'    :   order_product,
@@ -701,64 +701,74 @@ def wallet(request):
 
 from django.db.models import Min, Max
 
-def filter_product(request):
-    print("Hiiiiiiiiiiiiiiiii")
-    no_product     =   False
-    categories     =     Category.objects.filter(is_blocked=True)
-    variants       =     Variant.objects.values_list('variant_name', flat=True).distinct()
-    products       =     Product.objects.filter(is_deleted=False).order_by('product_name').prefetch_related('variants')
-
-    category_id    =     request.POST.get('category')
-    variant        =     request.POST.get('variant')
-    min_price      =     request.POST.get('min')
-    max_price      =     request.POST.get('max')
-    try:
-        category_id    =     Category.objects.get(id=category_id)
-    except:
-        category_id = None
-    if category_id:
-        products   =   products.filter(category__category_name__iexact=category_id.category_name)
-        print(products)
-    if variant:
-        products   =   products.filter(variants__variant_name__iexact=variant)
-    if min_price:
-        try:
-            min_price    =    float(min_price)
-            products     =    products.filter(variants__price__gte=min_price)
-        except ValueError:
-            pass
-    else:
-        min_price = 0
+def filter_products(request):
+    categories = Category.objects.filter(is_blocked=True)
+    variants = Variant.objects.values_list('variant_name', flat=True).distinct()
+    sizevar = list(Variant.objects.order_by('variant_name').values_list('variant_name', flat=True).distinct())
+    category = None  # Initialize category variable to None
     
-    if max_price:
-        try:
-            max_price   =   float(max_price)
-            products    =   products.filter(variants__price__lte=max_price)
-        except ValueError:
-            max_price  =  0
-
-    products = products.annotate(min_price=Min('variants__price'), max_price=Max('variants__price'))
-
-    if products.count() == 0:
-        messages.error(request,"")
-        no_product = True 
+    if request.method == 'POST':
+        category_id = request.POST.get('category')
+        print(category_id)
+        size = request.POST.get('variant')
+        min_price = request.POST.get('min')
+        max_price = request.POST.get('max')
+        products = Product.objects.filter(is_deleted=False).order_by('product_name')
+        
+        if category_id:
+            category = Category.objects.get(id=category_id)  # Set the category variable to the selected category object
+            products = products.filter(category__category_name__iexact=category.category_name)
+        
+        if size:
+            products = products.filter(variants__variant_name__iexact=size)
+        
+        if min_price and max_price:
+            products = products.annotate(
+                min_price=Min('variants__price'),
+                max_price=Max('variants__price')
+            ).filter(variants__price__gte=min_price, variants__price__lte=max_price)
+        elif min_price:
+            products = products.annotate(min_price=Min('variants__price')).filter(variants__price__gte=min_price)
+        elif max_price:
+            products = products.annotate(max_price=Max('variants__price')).filter(variants__price__lte=max_price)
+    else:
+        products = Product.objects.filter(is_deleted=False).order_by('product_name')
     context = {
-        'categories'  :    categories,
-        'variants'    :    variants,
-        'min_price'   :    min_price,
-        'max_price'   :    max_price,
-        'products'    :    products,
-        'filter'      :    True,
-        'category_id' :    category_id,
-        'euser'       :     True,
-        'no_product'  :    no_product,
-
+        'categories': categories,
+        'sizevar': sizevar,
+        'products': products,
+        'category': category,
+        'category_id': int(category_id),
+        'size': request.POST.get('variant'),
+        'min_price': request.POST.get('min'),
+        'max_price': request.POST.get('max'),
+        'filter': True,
+        'variants': variants,
     }
+
     return render(request, 'store/shop.html', context)
 
+def search_products(request):
+    query = request.GET.get('q')
+    categories = Category.objects.filter(is_blocked=True)
+    variants = Variant.objects.values_list('variant_name', flat=True).distinct()
+    sizevar = list(Variant.objects.order_by('variant_name').values_list('variant_name', flat=True).distinct())
     
+    products = Product.objects.filter(is_deleted=False).order_by('product_name')
+    
+    if query:
+        products = products.filter(Q(product_name__icontains=query) | Q(category__category_name__icontains=query) | Q(variants__variant_name__icontains=query)).distinct()
+
+    context = {
+        'categories': categories,
+        'sizevar': sizevar,
+        'products': products,
+        'variants':variants,
+        'filter': True,
+        'query': query,
+    }
+
+    return render(request, 'store/shop.html', context)
 
 
-       
-        
 

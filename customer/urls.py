@@ -25,7 +25,6 @@ urlpatterns=[
     path('add_address/',views.add_address,name='add_address'),
     path('editAddress/<int:id>',views.editAddress,name='editAddress'),
     path('update_address/<int:id>',views.update_address,name='update_address'),
-    # path('forgot_password/',views.forgot_password,name='forgot_password'),
     path('user_orders/<int:id>/',views.user_orders,name='user_orders'),
     path('user_order_details/<int:id>/', views.user_order_details,name='user_order_details'),
     path('user_order_details/cancel_product/', views.cancel_product,name='cancel_product'),
@@ -33,9 +32,5 @@ urlpatterns=[
     path('user_orders/download_invoice/',views.download_invoice,name='download_invoice'),
     path('user_wallet/',views.user_wallet,name='user_wallet'),
     path('download_invoice_excel/', views.download_invoice_excel,name='download_invoice_excel'),
-    # path('reset_password/', auth_views.PasswordResetView.as_view(template_name="registration/password_reset_form.html"), name="reset_password"),
-    # path('reset_password_sent/', auth_views.PasswordResetDoneView.as_view(template_name="registration/password_reset_done.html"), name="password_reset_done"),
-    # path('reset/<uidb64>/<token>/', auth_views.PasswordResetConfirmView.as_view(template_name="registration/password_reset_confirm.html"), name="password_reset_confirm"),
-    # path('reset_password_complete/', auth_views.PasswordResetCompleteView.as_view(template_name="registration/password_reset_complete.html"), name="password_reset_complete"),
 
 ]
