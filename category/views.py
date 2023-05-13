@@ -80,7 +80,11 @@ def addProduct(request):
             unique_variants     =   []
             for variant in variants:
                 if variant in unique_variants:
+<<<<<<< HEAD
                     messages.error(request,"Warning: Add different size variants..")
+=======
+                    messages.error(request,"Warning: Multiple variants have the same value..")
+>>>>>>> 332893c805ca3e003c2b8339de91435e6755475d
                     return redirect('addProduct')
                 else:
                     unique_variants.append(variant)

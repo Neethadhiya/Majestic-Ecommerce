@@ -27,7 +27,11 @@ SECRET_KEY = os.environ.get('SECRET_KEY')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
+<<<<<<< HEAD
 ALLOWED_HOSTS = []
+=======
+ALLOWED_HOSTS = ['*','13.48.31.181']
+>>>>>>> 332893c805ca3e003c2b8339de91435e6755475d
 
 
 # Application definition
@@ -131,6 +135,11 @@ STATIC_URL = 'static/'
 STATICFILES_DIRS = [
     BASE_DIR,"static"    
 ]
+<<<<<<< HEAD
+=======
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+
+>>>>>>> 332893c805ca3e003c2b8339de91435e6755475d
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.1/ref/settings/#default-auto-field
