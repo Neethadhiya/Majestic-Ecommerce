@@ -732,6 +732,9 @@ def filter_products(request):
             products = products.annotate(max_price=Max('variants__price')).filter(variants__price__lte=max_price)
     else:
         products = Product.objects.filter(is_deleted=False).order_by('product_name')
+    if not products:
+        no_product = True
+       
     context = {
         'categories': categories,
         'sizevar': sizevar,
@@ -743,7 +746,8 @@ def filter_products(request):
         'max_price': request.POST.get('max'),
         'filter': True,
         'variants': variants,
-        'euser'             :   True,
+        'euser'   :   True,
+        'no_product' :  no_product,
     }
 
     return render(request, 'store/shop.html', context)
