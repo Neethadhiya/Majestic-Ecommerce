@@ -217,7 +217,7 @@ def customer_logout(request):
 
 @login_required(login_url='customer_signin')
 def user_profile(request):
-    address         =   Address.objects.all()
+    address         =   Address.objects.filter(user=request.user)
     categories      =   Category.objects.all()
     user_details    =   CustomUser.objects.get(id=request.user.id)
     user_name       =   user_details.first_name
