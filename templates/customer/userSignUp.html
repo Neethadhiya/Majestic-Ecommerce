@@ -70,7 +70,7 @@
              </form>
              <hr class="my-4">
 
-             {% if otp %}
+             {% if request.session.otp_true %}
 			        <form method="post" action="{% url 'verify_otp' %}">
 				        {% csrf_token %}
                 <div class="form-outline mb-4">

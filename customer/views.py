@@ -76,93 +76,113 @@ def index(request):
              }
     return render(request,'store/index.html',context)
 
+
 def customer_signUp(request):
-    categories      =   Category.objects.filter(is_blocked=True)
-    context         =   {'categories':categories}
-    if request.method=='POST':
-        first_name      =   request.POST['first_name']
-        last_name       =   request.POST['last_name']
-        email           =   request.POST['email']
-        phone_number    =   request.POST['phone_number']
-        password        =   request.POST['password']
-        cpassword       =   request.POST['cpassword']
+    if request.method == 'POST':
+        # Registration form submitted
+        first_name = request.POST.get('first_name')
+        last_name = request.POST.get('last_name')
+        email = request.POST.get('email')
+        phone_number = request.POST.get('phone_number')
+        password = request.POST.get('password')
+        cpassword = request.POST.get('cpassword')
 
-        if password == cpassword :
-            first_name_pattern   =      "^[A-Za-z\s]{3,}$"
-            first_name_verify    =      re.match(first_name_pattern,first_name)
+        # Perform validation checks
+        if not first_name:
+            messages.error(request, 'First name is required', extra_tags='alert alert-danger')
+            return redirect('customer_signUp')
 
-            if first_name == "":
-                messages.error(request,'First name must not be empty',extra_tags='signupfirst_name')
-                return redirect(customer_signUp)
-            elif email =="":
-                messages.error(request,"Email must not be empty", extra_tags='signupemail')
-                return redirect(customer_signUp)
-            elif phone_number =='':
-                messages.error(request,"Mobile must not be empty", extra_tags='signupphone_number')
-                return redirect(customer_signUp)
-            elif password=='':
-                messages.error(request,"Password must not be empty", extra_tags='signuppassword')
-                return redirect(customer_signUp)
-            else:
-                if first_name_verify is None:
-                    messages.error(request,'Username must contain charecters only',extra_tags='signupusername')
-                    return redirect(customer_signUp)
-                if CustomUser.objects.filter(first_name = first_name).exists():
-                    messages.error(request, "That username is taken. Try another", extra_tags='signupusername')
-                    return redirect(customer_signUp)
-                if CustomUser.objects.filter(phone_number = phone_number).exists():
-                    messages.error(request,"That phone number is taken. Try another", extra_tags='signupphone_number')
-                    return redirect(customer_signUp)
-                if CustomUser.objects.filter(email = email).exists():
-                    messages.error(request,"That email is taken. Try another", extra_tags='signupemail')
-                    return redirect(customer_signUp)
-                else:
-                    user=CustomUser.objects.create_user(
-                            first_name      =   first_name,
-                            email           =   email,
-                            password        =   password,
-                        )
-                    user.last_name=last_name
-                    user.phone_number=phone_number
-                    user.save()
-                    request.session['user_id']  =   user.id
-                    otp_code                    =   random.randint(100000,999999)
-                    status                      =   send_otp_to_phone(user.phone_number, otp_code)
-                    if status == 'Success':
-                        messages.success(request,"OTP sent successfully..")
-                        request.session['otp_code'] = otp_code
-                        context={'otp':'true'}
-                        return render(request,'customer/userSignUp.html',context)
-                    else:
-                        messages.error(request, 'Failed to send OTP code')
-                        return render(request,'store/index.html')
+        if not email:
+            messages.error(request, 'Email is required', extra_tags='alert alert-danger')
+            return redirect('customer_signUp')
+
+        if not phone_number:
+            messages.error(request, 'Phone number is required', extra_tags='alert alert-danger')
+            return redirect('customer_signUp')
+
+        if not password:
+            messages.error(request, 'Password is required', extra_tags='alert alert-danger')
+            return redirect('customer_signUp')
+
+        if password != cpassword:
+            messages.error(request, 'Passwords do not match', extra_tags='alert alert-danger')
+            return redirect('customer_signUp')
         else:
-            messages.error(request,"Enter matching passwords", extra_tags='signuppassword')
-            return render(request,'customer/userSignUp.html',context)
+            if CustomUser.objects.filter(phone_number = phone_number).exists():
+                messages.error(request,"The phone number is already exists. Try another...", extra_tags='signupphone_number')
+                return redirect(customer_signUp)
+            if CustomUser.objects.filter(email = email).exists():
+                messages.error(request,"The email is already exists. Try another...", extra_tags='signupemail')
+                return redirect(customer_signUp)
+
+            # Generate OTP code and send to user's phone number
+            otp = str(random.randint(1000, 9999))
+            status = send_otp_to_phone(phone_number, otp)
+            if status == 'Success':
+                request.session['phone_number'] = phone_number
+                request.session['otp'] = otp
+                request.session['new_user_data'] = {
+                    'first_name': first_name,
+                    'last_name': last_name,
+                    'email': email,
+                    'phone_number': phone_number,
+                    'password': password,
+                }
+                messages.success(request,"OTP sent successfully..")   
+                request.session['otp_true'] = True
+                return redirect('verify_otp')
+            else:
+                messages.error(request, 'Failed to send OTP code')
+                return redirect('customer_signUp')
+
+    # GET request, display registration form
+    return render(request, 'customer/userSignUp.html')
+
+def verify_otp(request):
+    if request.method == 'POST':
+        # Verify OTP code
+        entered_otp = request.POST.get('otp_code')
+        if not entered_otp:
+            messages.error(request, 'Please enter the otp!', extra_tags='alert alert-danger')
+            return redirect('customer_signUp')        
+        saved_otp = request.session.get('otp')
+        if str(entered_otp) == str(saved_otp):
+            # OTP verification successful
+            new_user_data = request.session.get('new_user_data')
+            user = CustomUser.objects.create_user(
+                email     = new_user_data['email'],
+                password  = new_user_data['password'],
+                first_name = new_user_data['first_name'],
+                last_name = new_user_data['last_name'],
+                phone_number = new_user_data['phone_number'],           
+                  )
+            request.session['user_id']  =   user.id
+            del request.session['otp']
+            del request.session['otp_true']
+            del request.session['new_user_data']
+            messages.success(request, 'Account created successfully!', extra_tags='alert alert-success')
+            return redirect('customer_signin')
+        else:
+            # OTP verification failed
+            del request.session['otp_true']
+            messages.error(request, 'Invalid OTP code', extra_tags='alert alert-danger')
+            return redirect('customer_signUp')
+
+    # GET request, display OTP verification form
+    phone_number = request.session.get('phone_number')
+    if phone_number:
+        return redirect('customer_signUp')
     else:
-        return render(request,'customer/userSignUp.html',context)
+        messages.error(request, 'Phone number not found', extra_tags='alert alert-danger')
+        return redirect('customer_signUp')
+
     
 def send_otp_to_phone(phone_number, otp_code):
-    phone_number    =   9483317820
     api_key         =   '162c1276-bd93-11ed-81b6-0200cd936042'
     url             =    f'https://2factor.in/API/V1/{api_key}/SMS/+91{phone_number}/{otp_code}'
     response        =    requests.get(url)
     response_json   =   response.json()
     return response_json['Status']
-
-def verify_otp(request):
-    if 'otp_code' not in request.session:
-        return redirect('customer_signin')
-    if request.method == 'POST':
-        otp_code            =   request.POST['otp_code']
-        if str(otp_code)   ==   str(request.session['otp_code']):
-            user_id         =   request.session['user_id']
-            user            =   CustomUser.objects.get(id=user_id)
-            login(request, user)
-            return redirect('index')
-        else:
-            messages.error(request,'Invalid OTP code')
-    return render(request, 'customer/verify_otp.html')
 
 def customer_signin(request):
     categories      =   Category.objects.filter(is_blocked=True)
